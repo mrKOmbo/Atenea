@@ -1,8 +1,12 @@
 # Database functions
+import datetime
 import logging
+from typing import List
 from sqlalchemy import create_engine, Engine
 from sqlalchemy.orm import Session
-from .models import Base, IncidentLocation, IncidentType, UserLocation
+from .models import Base, IncidentLocation, IncidentType, RouteStation, UserLocation, RouteJourney
+
+VICINITY_RADIUS_METERS = 500  # Define a constant for vicinity radius
 
 def get_engine(db_url: str) -> Engine:
     """
@@ -46,13 +50,90 @@ def get_incident_types(engine: Engine) -> list[IncidentType]:
         types = session.query(IncidentType).all()
     return types
 
+def get_route_journeys_in_vicinity(engine: Engine, latitude: float, longitude: float, radius_meters: float) -> List[RouteJourney]:
+    """
+    Retrieve all route journeys within a certain radius (in meters) of a given latitude and longitude.
+
+    To get a route journey in the vicinity, we use the PostGIS function ST_DWithin to check if the
+    location of the origin or destination of the route journey is within the specified radius.
+    """
+    with Session(engine) as session:
+        stations = session.query(RouteStation).filter(
+            RouteStation.location.ST_DWithin(f'POINT({longitude} {latitude})', radius_meters)
+        ).all()
+
+        station_ids = [station.id for station in stations]
+
+        journeys = session.query(RouteJourney).filter(
+            (RouteJourney.origin_station_id.in_(station_ids)) |
+            (RouteJourney.destination_station_id.in_(station_ids))
+        ).all()
+    return journeys
+
 def create_incident_location(engine: Engine, type_id: int, latitude: float, longitude: float) -> IncidentLocation:
     """
     Create a new incident location entry in the database.
+
+    When a new incident location is created, it is marked as active by default and makes all the route journeys
+    in the vicinity have a delay according to the estimated time of the incident type.
     """
     new_incident = IncidentLocation(type_id=type_id, location=f'POINT({longitude} {latitude})')
     with Session(engine) as session:
         session.add(new_incident)
         session.commit()
         logging.debug(f"Incident location created: {new_incident}")
+
+    # Get all route journeys in the vicinity (e.g., within 500 meters)
+    nearby_journeys = get_route_journeys_in_vicinity(engine, latitude, longitude, radius_meters=VICINITY_RADIUS_METERS)
+
+    # Get the incident type to know the estimated time
+    with Session(engine) as session:
+        incident_type = session.get(IncidentType, type_id)
+        if incident_type is None:
+            # This should not happen as type_id is a foreign key, but just in case
+            logging.error(f"Incident type with ID {type_id} not found")
+            return new_incident
+
+    # Add delay to each nearby journey based on the incident type's estimated time
+    for journey in nearby_journeys:
+        journey.delay = (journey.delay or 0) + incident_type.estimated_time
+        logging.info(f"Added delay to journey ID {journey.id}: {journey.delay} minutes")
+        with Session(engine) as session:
+            session.merge(journey)
+            session.commit()
+
     return new_incident
+
+def deactivate_old_incident_locations(engine: Engine) -> None:
+    """
+    Deactivate all the active incident locations that are older than their estimated time and remove delays from route journeys.
+    This function should be run periodically to ensure that old incidents are marked as inactive.
+    """
+    with Session(engine) as session:
+        incidents = session.query(IncidentLocation).filter(
+            IncidentLocation.active == True,
+        ).all()
+        for incident in incidents:
+            # Get the incident type to know the estimated time
+            incident_type = session.get(IncidentType, incident.type_id)
+            if incident_type is None:
+                logging.error(f"Incident type with ID {incident.type_id} not found")
+                continue
+            elapsed_time = (datetime.datetime.now() - incident.report_time).total_seconds() / 60  # in minutes
+            if elapsed_time >= incident_type.estimated_time:
+                incident.active = False
+                logging.info(f"Deactivating incident ID {incident.id} after {elapsed_time} minutes")
+                session.merge(incident)
+
+                # Get all route journeys in the vicinity (e.g., within 500 meters)
+                incident_location = incident.location
+                longitude, latitude = map(float, incident_location.lstrip('POINT(').rstrip(')').split())
+                nearby_journeys = get_route_journeys_in_vicinity(engine, latitude, longitude, radius_meters=VICINITY_RADIUS_METERS)
+
+                # Remove delay from each nearby journey based on the incident type's estimated time
+                for journey in nearby_journeys:
+                    journey.delay = max(0, journey.delay - incident_type.estimated_time)
+                    logging.info(f"Removed delay from journey ID {journey.id}: {journey.delay} minutes")
+                    session.merge(journey)
+
+        session.commit()

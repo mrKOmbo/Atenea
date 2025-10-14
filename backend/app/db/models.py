@@ -109,7 +109,8 @@ class RouteJourney(Base):
     2. origin_station_id: Foreign key to stations (integer)
     3. destination_station_id: Foreign key to stations (integer)
     4. time_of_journey: Timestamp of the journey (datetime)
-    5. route_id: Foreign key to route_names (integer)
+    5. delay: Delay in minutes (integer)
+    6. route_id: Foreign key to route_names (integer)
     """
     __tablename__ = "journeys"
 
@@ -117,4 +118,5 @@ class RouteJourney(Base):
     origin_station_id: Mapped[int] = mapped_column(ForeignKey("stations.id"), nullable=False)
     destination_station_id: Mapped[int] = mapped_column(ForeignKey("stations.id"), nullable=False)
     time_of_journey: Mapped[time] = mapped_column(nullable=False) # store only time component
+    delay: Mapped[int] = mapped_column(nullable=False, default=0) # delay in minutes, nullable
     route_id: Mapped[int] = mapped_column(ForeignKey("route_names.id"), nullable=False)
