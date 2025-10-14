@@ -2,7 +2,7 @@
 import datetime
 import logging
 from typing import List
-from sqlalchemy import create_engine, Engine
+from sqlalchemy import create_engine, Engine, func
 from sqlalchemy.orm import Session
 from .models import Base, IncidentLocation, IncidentType, RouteStation, UserLocation, RouteJourney
 from .algorithms import route_finding_algorithm
@@ -113,7 +113,7 @@ def create_incident_location(engine: Engine, type_id: int, latitude: float, long
     # Add delay to each nearby journey based on the incident type's estimated time
     for journey in nearby_journeys:
         journey.delay = (journey.delay or 0) + incident_type.estimated_time
-        logging.info(f"Added delay to journey ID {journey.id}: {journey.delay} minutes")
+        logging.info(f"Added delay to journey ID {journey.id}: {journey.delay} seconds")
         with Session(engine) as session:
             session.merge(journey)
             session.commit()
@@ -135,10 +135,10 @@ def deactivate_old_incident_locations(engine: Engine) -> None:
             if incident_type is None:
                 logging.error(f"Incident type with ID {incident.type_id} not found")
                 continue
-            elapsed_time = (datetime.datetime.now() - incident.report_time).total_seconds() / 60  # in minutes
+            elapsed_time = (datetime.datetime.now() - incident.report_time).total_seconds() # in seconds
             if elapsed_time >= incident_type.estimated_time:
                 incident.active = False
-                logging.info(f"Deactivating incident ID {incident.id} after {elapsed_time} minutes")
+                logging.info(f"Deactivating incident ID {incident.id} after {elapsed_time} seconds")
                 session.merge(incident)
 
                 # Get all route journeys in the vicinity (e.g., within 500 meters)
@@ -149,7 +149,7 @@ def deactivate_old_incident_locations(engine: Engine) -> None:
                 # Remove delay from each nearby journey based on the incident type's estimated time
                 for journey in nearby_journeys:
                     journey.delay = max(0, journey.delay - incident_type.estimated_time)
-                    logging.info(f"Removed delay from journey ID {journey.id}: {journey.delay} minutes")
+                    logging.info(f"Removed delay from journey ID {journey.id}: {journey.delay} seconds")
                     session.merge(journey)
 
         session.commit()
@@ -161,32 +161,45 @@ def get_route_information(engine: Engine, origin_latitude: float, origin_longitu
     Add alerts of the delays that may exist in the route due to active incidents.
     """
 
-    origin_coordinates = Geometry(f'POINT({origin_longitude} {origin_latitude})')
-    destination_coordinates = Geometry(f'POINT({destination_longitude} {destination_latitude})')
+    origin_coordinates = f'POINT({origin_longitude} {origin_latitude})'
+    destination_coordinates = f'POINT({destination_longitude} {destination_latitude})'
 
-    route, estimated_total_time = route_finding_algorithm(engine, origin_coordinates, destination_coordinates)
+    estimated_total_time, route = route_finding_algorithm(engine, origin_coordinates, destination_coordinates)
 
     if not route:
         return {"route": [], "estimated_total_time": 0.0, "incidents": []}
 
-    incidents = []
-    for station in route:
-        nearby_incidents = get_active_incident_vicinity(engine, station.location.y, station.location.x, radius_meters=VICINITY_RADIUS_METERS)
-        for incident in nearby_incidents:
-            incident_type = None
-            with Session(engine) as session:
-                incident_type = session.get(IncidentType, incident.type_id)
-            if incident_type:
-                incidents.append({
-                    "type": incident_type.type,
-                    "description": incident_type.description,
-                    "severity": incident_type.severity,
-                    "estimated_time": incident_type.estimated_time,
-                    "location": {
-                        "latitude": incident.location.y,
-                        "longitude": incident.location.x
-                    },
-                    "report_time": incident.report_time.isoformat()
-                })
+    # Search for incidents near each station in the route
+    with Session(engine) as session:
+        stations = []
+        for step in route:
+            station_latitude = step['from']['latitude']
+            station_longitude = step['from']['longitude']
+            stations.append((station_latitude, station_longitude))
 
-    return {"route": route, "estimated_total_time": estimated_total_time, "incidents": incidents }
+        incidents = []
+        # For each station, find nearby active incidents
+        for station in stations:
+            station_latitude, station_longitude = station
+            nearby_incidents = get_active_incident_vicinity(engine, station_latitude, station_longitude, radius_meters=VICINITY_RADIUS_METERS)
+            for incident in nearby_incidents:
+                incident_type = session.get(IncidentType, incident.type_id)
+                if incident_type:
+                    incident_coords = session.query(
+                        func.ST_Y(incident.location).label('latitude'),
+                        func.ST_X(incident.location).label('longitude')
+                    ).one()
+                    incidents.append({
+                        "type": incident_type.type,
+                        "description": incident_type.description,
+                        "severity": incident_type.severity,
+                        "estimated_time": incident_type.estimated_time,
+                        "location": {
+                            "latitude": incident_coords.latitude,
+                            "longitude": incident_coords.longitude
+                        },
+                        "report_time": incident.report_time.isoformat()
+                    })
+
+
+    return {"route": route, "estimated_total_time": estimated_total_time, "incidents": incidents}

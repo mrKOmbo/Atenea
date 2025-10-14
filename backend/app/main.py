@@ -222,10 +222,5 @@ async def find_route(data: dict):
     if not route_info["route"]:
         return {"status": "error", "message": "No route found"}
 
-    # Get incidents along the route
-    incidents = route_info["incidents"]
-    if not incidents:
-        return {"status": "success", "message": "Route found but no incidents reported"}
-
     return {"status": "success", "data": route_info}
 
