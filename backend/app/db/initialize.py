@@ -1,9 +1,51 @@
 # Initialize the database with sample data
 import csv
+import logging
 from datetime import datetime
 from sqlalchemy import Engine
 from sqlalchemy.orm import Session
-from .models import TransportAgency, RouteName, RouteStation, RouteJourney
+from .models import TransportAgency, RouteName, RouteStation, RouteJourney, IncidentType
+
+def initialize_database_data(engine: Engine, gtfs_csv_path: str) -> None:
+    """
+    Initialize the database with default data if necessary.
+    """
+    with Session(engine) as session:
+        agency_count = session.query(TransportAgency).count()
+        route_count = session.query(RouteName).count()
+        station_count = session.query(RouteStation).count()
+        journey_count = session.query(RouteJourney).count()
+
+        if agency_count == 0 or route_count == 0 or station_count == 0 or journey_count == 0:
+            logging.info("Database is empty. Importing data from CSV...")
+            generate_default_incident_types(engine)
+            import_from_csv(engine, gtfs_csv_path)
+        else:
+            logging.info("Database already initialized with data.")
+
+def generate_default_incident_types(engine: Engine) -> None:
+    """
+    Generate default incident types in the database if they do not exist.
+    """
+    default_types = [
+        {"type": "Delay", "description": "Service is delayed", "severity": 3, "estimated_time": 15},
+        {"type": "Accident", "description": "Accident on route", "severity": 5, "estimated_time": 40},
+        {"type": "Maintenance", "description": "Scheduled maintenance", "severity": 4, "estimated_time": 30},
+        {"type": "Weather", "description": "Weather-related disruption", "severity": 4, "estimated_time": 30},
+    ]
+
+    with Session(engine) as session:
+        existing_types = {it.type for it in session.query(IncidentType).all()}
+        for it in default_types:
+            if it["type"] not in existing_types:
+                new_type = IncidentType(
+                    type=it["type"],
+                    description=it["description"],
+                    severity=it["severity"],
+                    estimated_time=it["estimated_time"]
+                )
+                session.add(new_type)
+        session.commit()
 
 def import_from_csv(engine: Engine, file_path: str) -> None:
     """
