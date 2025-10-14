@@ -1,14 +1,15 @@
 # Main application file for the FastAPI backend
-from .db.functions import get_engine, create_user_location, create_incident_type, create_incident_location
+from .db.functions import get_engine, create_user_location, create_incident_type, create_incident_location, deactivate_old_incident_locations
 from .db.initialize import initialize_database_data
-from .db.models import RouteName
 
 from dotenv import load_dotenv
 from fastapi import FastAPI
-from sqlalchemy.orm import Session
 
 import os
 import logging
+import schedule
+import threading
+import time
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -24,6 +25,32 @@ initialize_database_data(dbEngine, './gtfs/transit_graph.csv')
 
 # Set up FastAPI app
 app = FastAPI()
+
+# Cron jobs would be set up here if needed
+def run_cron_jobs():
+    """
+    Function to run periodic tasks, such as deactivating old incidents.
+    This function can be scheduled to run at regular intervals using a task scheduler.
+    """
+    logger.info("Running cron jobs...")
+    deactivate_old_incident_locations(dbEngine)
+
+# Schedule the cron job to run every hour
+schedule.every().hour.do(run_cron_jobs)
+
+# Function to run the scheduler in a separate thread
+def run_scheduler():
+    """
+    Function to run the scheduler in a separate thread.
+    """
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
+
+# Start the scheduler in a background thread
+scheduler_thread = threading.Thread(target=run_scheduler)
+scheduler_thread.daemon = True
+scheduler_thread.start()
 
 # User information endpoints
 
