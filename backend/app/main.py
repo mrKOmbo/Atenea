@@ -1,5 +1,5 @@
 # Main application file for the FastAPI backend
-from .db.functions import get_engine, create_user_location, create_incident_type, create_incident_location, deactivate_old_incident_locations
+from .db.functions import get_engine, create_user_location, create_incident_type, create_incident_location, deactivate_old_incident_locations, get_route_information
 from .db.initialize import initialize_database_data
 
 from dotenv import load_dotenv
@@ -10,7 +10,7 @@ import logging
 import schedule
 import threading
 import time
-
+    
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -181,3 +181,51 @@ async def receive_incident_location(data: dict):
     create_incident_location(dbEngine, type_id, latitude, longitude)
 
     return {"status": "success", "message": "Incident location received"}
+
+# Route finding endpoint
+
+@app.post("/api/route/find")
+async def find_route(data: dict):
+    """
+    Endpoint to find the optimal route between two locations.
+    Expects a JSON payload with 'start_latitude', 'start_longitude', 'end_latitude', and 'end_longitude'.
+
+    {
+        "start_latitude": 19.4326,
+        "start_longitude": -99.1332,
+        "end_latitude": 19.4270,
+        "end_longitude": -99.1677
+    }
+    """
+    logger.debug(f"Received route finding data: {data}")
+
+    start_latitude = data.get("start_latitude")
+    start_longitude = data.get("start_longitude")
+    end_latitude = data.get("end_latitude")
+    end_longitude = data.get("end_longitude")
+
+    if start_latitude is None or start_longitude is None or end_latitude is None or end_longitude is None:
+        logger.error("Missing required fields")
+        return {"status": "error", "message": "Missing required fields"}
+
+    if not all(isinstance(coord, (float, int)) for coord in (start_latitude, start_longitude, end_latitude, end_longitude)):
+        logger.error("All coordinates must be numbers")
+        return {"status": "error", "message": "All coordinates must be numbers"}
+
+    if not (-90 <= start_latitude <= 90) or not (-180 <= start_longitude <= 180) or not (-90 <= end_latitude <= 90) or not (-180 <= end_longitude <= 180):
+        logger.error("One or more coordinates are out of range")
+        return {"status": "error", "message": "One or more coordinates are out of range"}
+
+    route_info = get_route_information(dbEngine, start_latitude, start_longitude, end_latitude, end_longitude)
+
+
+    if not route_info["route"]:
+        return {"status": "error", "message": "No route found"}
+
+    # Get incidents along the route
+    incidents = route_info["incidents"]
+    if not incidents:
+        return {"status": "success", "message": "Route found but no incidents reported"}
+
+    return {"status": "success", "data": route_info}
+

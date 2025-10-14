@@ -5,8 +5,10 @@ from typing import List
 from sqlalchemy import create_engine, Engine
 from sqlalchemy.orm import Session
 from .models import Base, IncidentLocation, IncidentType, RouteStation, UserLocation, RouteJourney
+from .algorithms import route_finding_algorithm
+from geoalchemy2 import Geometry
 
-VICINITY_RADIUS_METERS = 500  # Define a constant for vicinity radius
+VICINITY_RADIUS_METERS = 500
 
 def get_engine(db_url: str) -> Engine:
     """
@@ -69,6 +71,20 @@ def get_route_journeys_in_vicinity(engine: Engine, latitude: float, longitude: f
             (RouteJourney.destination_station_id.in_(station_ids))
         ).all()
     return journeys
+
+def get_active_incident_vicinity(engine: Engine, latitude: float, longitude: float, radius_meters: float) -> List[IncidentLocation]:
+    """
+    Retrieve all active incident locations within a certain radius (in meters) of a given latitude and longitude.
+
+    To get an incident location in the vicinity, we use the PostGIS function ST_DWithin to check if the
+    location of the incident is within the specified radius.
+    """
+    with Session(engine) as session:
+        incidents = session.query(IncidentLocation).filter(
+            IncidentLocation.active == True,
+            IncidentLocation.location.ST_DWithin(f'POINT({longitude} {latitude})', radius_meters)
+        ).all()
+    return incidents
 
 def create_incident_location(engine: Engine, type_id: int, latitude: float, longitude: float) -> IncidentLocation:
     """
@@ -137,3 +153,40 @@ def deactivate_old_incident_locations(engine: Engine) -> None:
                     session.merge(journey)
 
         session.commit()
+
+def get_route_information(engine: Engine, origin_latitude: float, origin_longitude: float, destination_latitude: float, destination_longitude: float) -> dict:
+    """
+    Retrieve the route information between two coordinates using the route finding algorithm.
+
+    Add alerts of the delays that may exist in the route due to active incidents.
+    """
+
+    origin_coordinates = Geometry(f'POINT({origin_longitude} {origin_latitude})')
+    destination_coordinates = Geometry(f'POINT({destination_longitude} {destination_latitude})')
+
+    route, estimated_total_time = route_finding_algorithm(engine, origin_coordinates, destination_coordinates)
+
+    if not route:
+        return {"route": [], "estimated_total_time": 0.0, "incidents": []}
+
+    incidents = []
+    for station in route:
+        nearby_incidents = get_active_incident_vicinity(engine, station.location.y, station.location.x, radius_meters=VICINITY_RADIUS_METERS)
+        for incident in nearby_incidents:
+            incident_type = None
+            with Session(engine) as session:
+                incident_type = session.get(IncidentType, incident.type_id)
+            if incident_type:
+                incidents.append({
+                    "type": incident_type.type,
+                    "description": incident_type.description,
+                    "severity": incident_type.severity,
+                    "estimated_time": incident_type.estimated_time,
+                    "location": {
+                        "latitude": incident.location.y,
+                        "longitude": incident.location.x
+                    },
+                    "report_time": incident.report_time.isoformat()
+                })
+
+    return {"route": route, "estimated_total_time": estimated_total_time, "incidents": incidents }

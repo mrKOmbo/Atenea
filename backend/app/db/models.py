@@ -14,9 +14,8 @@ class UserLocation(Base):
     Table to store user location data, this will be used to track user movements.
     1. user_id: ID of the user (string)
     2. time_date: Timestamp of the location data (datetime)
-    3. latitude: Latitude of the location (float)
-    4. longitude: Longitude of the location (float)
-    5. id: Primary key (integer)
+    3. location: Geographical location of the user (POINT)
+    4. id: Primary key (integer)
     """
     __tablename__ = "user_locations"
 
@@ -47,10 +46,9 @@ class IncidentLocation(Base):
     Table to store incident location data, this will be used to track reported incidents.
     1. id: Primary key (integer)
     2. report_time: Timestamp of the report (datetime)
-    3. latitude: Latitude of the incident location (float)
-    4. longitude: Longitude of the incident location (float)
-    5. active: Status of the incident (boolean)
-    6. type_id: Type of incident, foreign key to incident_types (integer)
+    3. location: Geographical location of the incident (POINT)
+    4. active: Status of the incident (boolean)
+    5. type_id: Type of incident, foreign key to incident_types (integer)
     """
     __tablename__ = "incident_locations"
 
@@ -91,9 +89,8 @@ class RouteStation(Base):
     Table to store station data, this will be used to manage stations.
     1. id: Primary key (integer)
     2. name: Name of the station (string)
-    3. latitude: Latitude of the station (float)
-    4. longitude: Longitude of the station (float)
-    5. route_id: Foreign key to route_names (integer)
+    3. location: Geographical location of the station (POINT)
+    4. route_id: Foreign key to route_names (integer)
     """
     __tablename__ = "stations"
 
