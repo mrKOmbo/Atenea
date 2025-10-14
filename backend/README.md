@@ -55,10 +55,15 @@ patrón de movimiento y congestión.
 ```json
 {
     "user_id": "randomized_user_id_12345",
-    "time" : "2024-05-01T12:00:00Z",
     "latitude": 19.4326,
     "longitude": -99.1332
 }
+```
+
+Ejemplo con httpie:
+
+```bash
+http POST :8000/api/user/location user_id=randomized_user_id_12345 latitude:=19.4326 longitude:=-99.1332
 ```
 
 - Se generan rutas utilizando la información de Google Maps, pero se ajustan dinámicamente
