@@ -40,6 +40,7 @@ class IncidentType(Base):
     type: Mapped[str] = mapped_column(nullable=False, unique=True)
     description: Mapped[str] = mapped_column(nullable=False)
     severity: Mapped[int] = mapped_column(nullable=False)
+    estimated_time: Mapped[int] = mapped_column(nullable=False) # in minutes
 
 class IncidentLocation(Base):
     """
@@ -115,5 +116,5 @@ class RouteJourney(Base):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     origin_station_id: Mapped[int] = mapped_column(ForeignKey("stations.id"), nullable=False)
     destination_station_id: Mapped[int] = mapped_column(ForeignKey("stations.id"), nullable=False)
-    time_of_journey: Mapped[time] = mapped_column(nullable=False)
+    time_of_journey: Mapped[time] = mapped_column(nullable=False) # store only time component
     route_id: Mapped[int] = mapped_column(ForeignKey("route_names.id"), nullable=False)
