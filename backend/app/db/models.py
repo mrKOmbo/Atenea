@@ -1,8 +1,9 @@
 # Database models using SQLAlchemy ORM
 
 from datetime import datetime, time
+from typing import List
 from sqlalchemy import ForeignKey
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from geoalchemy2 import Geometry
 
 class Base(DeclarativeBase):
@@ -68,6 +69,7 @@ class TransportAgency(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(nullable=False, unique=True)
+    routes: Mapped[List["RouteName"]] = relationship(back_populates="agency")
 
 class RouteName(Base):
     """
@@ -83,6 +85,8 @@ class RouteName(Base):
     name: Mapped[str] = mapped_column(nullable=False, unique=True)
     short_name: Mapped[str] = mapped_column(nullable=False)
     agency_id: Mapped[int] = mapped_column(ForeignKey("transport_agencies.id"), nullable=False)
+    agency: Mapped["TransportAgency"] = relationship(back_populates="routes")
+    stations: Mapped[List["RouteStation"]] = relationship(back_populates="route")
 
 class RouteStation(Base):
     """
@@ -98,6 +102,7 @@ class RouteStation(Base):
     name: Mapped[str] = mapped_column(nullable=False, unique=True)
     location: Mapped[str] = mapped_column(Geometry('POINT'), nullable=False)
     route_id: Mapped[int] = mapped_column(ForeignKey("route_names.id"), nullable=False)
+    route: Mapped["RouteName"] = relationship(back_populates="stations")
 
 class RouteJourney(Base):
     """
