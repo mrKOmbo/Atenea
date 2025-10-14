@@ -22,6 +22,7 @@ def initialize_database_data(engine: Engine, gtfs_csv_path: str) -> None:
             import_from_csv(engine, gtfs_csv_path)
         else:
             logging.info("Database already initialized with data.")
+            reset_delays(engine)
 
 def generate_default_incident_types(engine: Engine) -> None:
     """
@@ -114,4 +115,15 @@ def import_from_csv(engine: Engine, file_path: str) -> None:
                 session.add(journey)
             
             session.commit()
+
+def reset_delays(engine: Engine) -> None:
+    """
+    Reset delays for all route journeys to zero.
+    """
+    with Session(engine) as session:
+        logging.info("Resetting delays for all route journeys to zero.")
+        journeys = session.query(RouteJourney).all()
+        for journey in journeys:
+            journey.delay = 0
+        session.commit()
 
