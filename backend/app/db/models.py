@@ -1,9 +1,9 @@
-# Database connection and query execution
-# We are using SQLAlchemy for database interactions
-import csv
+# Database models using SQLAlchemy ORM
+
 from datetime import datetime, time
-from sqlalchemy import create_engine, ForeignKey, Engine
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, Session
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from geoalchemy2 import Geometry
 
 class Base(DeclarativeBase):
     """Base class for all ORM models."""
@@ -23,8 +23,7 @@ class UserLocation(Base):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     user_id: Mapped[str] = mapped_column(nullable=False)
     time_date: Mapped[datetime] = mapped_column(nullable=False, default=datetime.now)
-    latitude: Mapped[float] = mapped_column(nullable=False)
-    longitude: Mapped[float] = mapped_column(nullable=False)
+    location: Mapped[str] = mapped_column(Geometry('POINT'), nullable=False)
 
 class IncidentType(Base):
     """
@@ -56,8 +55,7 @@ class IncidentLocation(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     report_time: Mapped[datetime] = mapped_column(nullable=False, default=datetime.now)
-    latitude: Mapped[float] = mapped_column(nullable=False)
-    longitude: Mapped[float] = mapped_column(nullable=False)
+    location: Mapped[str] = mapped_column(Geometry('POINT'), nullable=False)
     active: Mapped[bool] = mapped_column(nullable=False, default=True)
     type_id: Mapped[int] = mapped_column(ForeignKey("incident_types.id"), nullable=False)
 
@@ -100,8 +98,7 @@ class RouteStation(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(nullable=False, unique=True)
-    latitude: Mapped[float] = mapped_column(nullable=False)
-    longitude: Mapped[float] = mapped_column(nullable=False)
+    location: Mapped[str] = mapped_column(Geometry('POINT'), nullable=False)
     route_id: Mapped[int] = mapped_column(ForeignKey("route_names.id"), nullable=False)
 
 class RouteJourney(Base):
@@ -120,93 +117,3 @@ class RouteJourney(Base):
     destination_station_id: Mapped[int] = mapped_column(ForeignKey("stations.id"), nullable=False)
     time_of_journey: Mapped[time] = mapped_column(nullable=False)
     route_id: Mapped[int] = mapped_column(ForeignKey("route_names.id"), nullable=False)
-
-def get_engine(db_url: str) -> Engine:
-    """
-    Create and return a SQLAlchemy engine. If the database does not exist, it will be created.
-    """
-    engine = create_engine(db_url)
-
-    if engine is None:
-        raise ValueError("Failed to create database engine")
-
-    # Create all tables if they do not exist
-    Base.metadata.create_all(engine)
-    return engine
-
-def create_user_location(engine: Engine, user_id: str, latitude: float, longitude: float):
-    """
-    Create a new user location entry in the database.
-    """
-    new_location = UserLocation(user_id=user_id, latitude=latitude, longitude=longitude)
-    with Session(engine) as session:
-        session.add(new_location)
-        session.commit()
-    return new_location
-
-def import_from_csv(engine: Engine, file_path: str):
-    """
-    Import route and journey data from a CSV file.
-    The CSV file should have the following columns:
-    agency_name,route_long_name,route_short_name,origin_stop,origin_lat,origin_lon,destiny_stop,destiny_lat,destiny_lon,time_of_journey
-    """
-
-    with open(file_path, 'r', encoding='utf-8') as csvfile:
-        reader = csv.DictReader(csvfile)
-        with Session(engine) as session:
-            for row in reader:
-                # Get or create TransportAgency
-                agency = session.query(TransportAgency).filter_by(name=row['agency_name']).first()
-                if not agency:
-                    agency = TransportAgency(name=row['agency_name'])
-                    session.add(agency)
-                    session.flush() # Use flush to get the ID before commit
-
-                # Get or create RouteName
-                route_name = session.query(RouteName).filter_by(name=row['route_long_name']).first()
-                if not route_name:
-                    route_name = RouteName(
-                        name=row['route_long_name'],
-                        short_name=row['route_short_name'],
-                        agency_id=agency.id
-                    )
-                    session.add(route_name)
-                    session.flush()
-
-                # Get or create origin RouteStation
-                origin_station = session.query(RouteStation).filter_by(name=row['origin_stop']).first()
-                if not origin_station:
-                    origin_station = RouteStation(
-                        name=row['origin_stop'],
-                        latitude=float(row['origin_lat']),
-                        longitude=float(row['origin_lon']),
-                        route_id=route_name.id
-                    )
-                    session.add(origin_station)
-                    session.flush()
-
-                # Get or create destination RouteStation
-                destiny_station = session.query(RouteStation).filter_by(name=row['destiny_stop']).first()
-                if not destiny_station:
-                    destiny_station = RouteStation(
-                        name=row['destiny_stop'],
-                        latitude=float(row['destiny_lat']),
-                        longitude=float(row['destiny_lon']),
-                        route_id=route_name.id
-                    )
-                    session.add(destiny_station)
-                    session.flush()
-
-                # Create RouteJourney — store only the time component
-                journey_time = datetime.strptime(row['time_of_journey'], '%H:%M:%S').time()
-
-                journey = RouteJourney(
-                    origin_station_id=origin_station.id,
-                    destination_station_id=destiny_station.id,
-                    time_of_journey=journey_time,
-                    route_id=route_name.id
-                )
-                session.add(journey)
-            
-            session.commit()
-

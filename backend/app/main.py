@@ -1,7 +1,12 @@
 # Main application file for the FastAPI backend
-from .db import *
+from .db.functions import get_engine, create_user_location
+from .db.initialize import import_from_csv
+from .db.models import RouteName
+
 from dotenv import load_dotenv
 from fastapi import FastAPI
+from sqlalchemy.orm import Session
+
 import os
 import logging
 
@@ -29,6 +34,9 @@ with Session(dbEngine) as session:
     else:
         logger.info(f"Database already has {route_count} routes. Skipping import.")
 
+# User information endpoints
+
+# Endpoint to receive user location data
 @app.post("/api/user/location")
 async def receive_user_location(data: dict):
     """
