@@ -20,8 +20,29 @@ load_dotenv()
 
 # Get the database URL from environment variables
 DATABASE_URL = os.getenv("DATABASE_URL")
-dbEngine = get_engine(DATABASE_URL if DATABASE_URL is not None else "sqlite:///./test.db")
+if DATABASE_URL is None:
+    logger.error("DATABASE_URL is not set in environment variables.")
+    raise ValueError("DATABASE_URL is required")
+dbEngine = get_engine(DATABASE_URL)
 initialize_database_data(dbEngine)
+
+# Get the Redis URL from environment variables
+REDIS_URL = os.getenv("REDIS_URL", "")
+if not REDIS_URL:
+    logger.error("REDIS_URL is not set in environment variables.")
+    raise ValueError("REDIS_URL is required")
+
+# Get the Google Maps API key from environment variables
+GOOGLE_MAPS_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY", "")
+if not GOOGLE_MAPS_API_KEY:
+    logger.error("GOOGLE_MAPS_API_KEY is not set in environment variables.")
+    raise ValueError("GOOGLE_MAPS_API_KEY is required")
+
+# Get the OpenAI API key from environment variables
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
+if not OPENAI_API_KEY:
+    logger.error("OPENAI_API_KEY is not set in environment variables.")
+    raise ValueError("OPENAI_API_KEY is required")
 
 # Set up FastAPI app
 app = FastAPI()
@@ -181,20 +202,3 @@ async def receive_incident_location(data: dict):
     create_incident_location(dbEngine, type_id, latitude, longitude)
 
     return {"status": "success", "message": "Incident location received"}
-
-# Route finding endpoint
-
-@app.post("/api/route/find")
-async def find_route(data: dict):
-    """
-    Endpoint to find the optimal route between two locations.
-    Expects a JSON payload with 'start_latitude', 'start_longitude', 'end_latitude', and 'end_longitude'.
-
-    {
-        "start_latitude": 19.4326,
-        "start_longitude": -99.1332,
-        "end_latitude": 19.4270,
-        "end_longitude": -99.1677
-    }
-    """
-    pass

@@ -1,7 +1,13 @@
 fastapi[standard]
-uvicorn
-python-dotenv
-sqlalchemy
-psycopg2-binary
+feedparser
 geoalchemy2
+lxml[html_clean]
+newspaper3k
+openai
+psycopg2-binary
+python-dotenv
+redis
+requests
 schedule
+sqlalchemy
+uvicorn
