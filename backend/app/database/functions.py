@@ -74,11 +74,15 @@ def process_all_unprocessed_posts(engine: Engine, openai_client: OpenAI) -> None
                 if is_related:
                     post = MediaPost(
                         source="instagram",
-                        url=insta_post.url,
+                        url='https://www.instagram.com/' + insta_post.username + '/',
                         title="Instagram Post",
                         author=insta_post.username,
+                        content=insta_post.caption,
+                        image=insta_post.url,
+                        date=insta_post.date,
+                        keywords=insta_post.keywords
                     )
-                session.add(post)
+                    session.add(post)
 
                 insta_post.processed = True
                 session.commit()
