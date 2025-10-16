@@ -9,6 +9,14 @@ services:
       - "127.0.0.1:5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
+    
+  ollama:
+    image: docker.io/ollama/ollama:latest
+    ports:
+      - "127.0.0.1:11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    command: serve
 
   backend:
     build: .
@@ -23,3 +31,4 @@ services:
 
 volumes:
   db_data:
+  ollama_data:
