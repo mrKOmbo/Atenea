@@ -136,7 +136,7 @@ def scrape_instagram_user(engine: Engine, instaloader_instance: instaloader.Inst
                 if count >= max_posts:
                     break
 
-                post_url = post.url
+                post_url = "https://www.instagram.com/p/" + post.shortcode + "/"
                 username = post.owner_username
                 caption = post.caption if post.caption else ""
                 likes = post.likes
