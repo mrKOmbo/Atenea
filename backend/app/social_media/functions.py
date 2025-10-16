@@ -137,7 +137,8 @@ def scrape_instagram_user(engine: Engine, instaloader_instance: instaloader.Inst
                     break
 
                 post_url = "https://www.instagram.com/p/" + post.shortcode + "/"
-                username = post.owner_username
+                user = post.owner_username
+                image_url = post.url
                 caption = post.caption if post.caption else ""
                 likes = post.likes
                 date = post.date_utc # This is already a datetime object
@@ -145,7 +146,8 @@ def scrape_instagram_user(engine: Engine, instaloader_instance: instaloader.Inst
 
                 instagram_post = InstagramPost(
                     url=post_url,
-                    username=username,
+                    image_url=image_url,
+                    username=user,
                     caption=caption,
                     likes=likes,
                     date=date,

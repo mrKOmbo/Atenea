@@ -12,17 +12,19 @@ class InstagramPost(Base):
     Table to store Instagram posts, this will be used to track all scraped Instagram posts.
     1. id: Primary key (integer)
     2. url: URL of the Instagram post (string)
-    3. username: Username of the Instagram post author (string)
-    4. caption: Caption of the Instagram post (string)
-    5. likes: Number of likes on the post (integer)
-    6. date: Date when the post was created (datetime)
-    7. keywords: Hashtags associated with the post (string)
+    3. image_url: URL of the image in the Instagram post (string)
+    4. username: Username of the Instagram post author (string)
+    5. caption: Caption of the Instagram post (string)
+    6. likes: Number of likes on the post (integer)
+    7. date: Date when the post was created (datetime)
+    8. keywords: Hashtags associated with the post (string)
     8. processed: Boolean indicating if the post has been processed by AI (default: False)
     """
     __tablename__ = "instagram_posts"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     url: Mapped[str] = mapped_column(nullable=False, unique=True)
+    image_url: Mapped[str] = mapped_column(nullable=True)`
     username: Mapped[str] = mapped_column(nullable=False)
     caption: Mapped[str] = mapped_column(nullable=False)
     likes: Mapped[int] = mapped_column(nullable=False)
