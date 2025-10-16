@@ -1,13 +1,12 @@
 fastapi[standard]
+fastapi-utils
 feedparser
-geoalchemy2
+instaloader
 lxml[html_clean]
 newspaper3k
 openai
 psycopg2-binary
 python-dotenv
-redis
-requests
-schedule
 sqlalchemy
+typing_inspect
 uvicorn
