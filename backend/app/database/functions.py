@@ -13,6 +13,14 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 VICINITY_RADIUS_METERS = 500
 
+RELATED_KEYWORDS = [
+    "World Cup 2026",
+    "Mundial 2026",
+    "FIFA",
+    "soccer",
+    "football",
+]
+
 def get_engine(db_url: str) -> Engine:
     """
     Create and return a SQLAlchemy engine. If the database does not exist, it will be created.
@@ -40,7 +48,13 @@ def process_all_unprocessed_posts(engine: Engine, openai_client: OpenAI) -> None
 
         for article in unprocessed_articles:
             try:
-                is_related = is_news_article_related(openai_client, article, ["World Cup 2026"])
+                # Check if the article is already in MediaPost to avoid duplicates
+                if session.query(MediaPost).filter(MediaPost.url == article.url).first() is not None:
+                    article.processed = True
+                    session.commit()
+                    logger.debug(f"Article already processed and in MediaPost: {article.url}")
+
+                is_related = is_news_article_related(openai_client, article, RELATED_KEYWORDS)
                 if is_related:
                     post = MediaPost(
                         source="news",
@@ -70,15 +84,22 @@ def process_all_unprocessed_posts(engine: Engine, openai_client: OpenAI) -> None
 
         for insta_post in unprocessed_instagram_posts:
             try:
-                is_related = is_instagram_post_related(openai_client, insta_post, ["World Cup 2026"])
+                # Check if the post is already in MediaPost to avoid duplicates
+                if session.query(MediaPost).filter(MediaPost.url == insta_post.url).first() is not None:
+                    insta_post.processed = True
+                    session.commit()
+                    logger.debug(f"Instagram post already processed and in MediaPost: {insta_post.url}")
+
+                is_related = is_instagram_post_related(openai_client, insta_post, RELATED_KEYWORDS)
+
                 if is_related:
                     post = MediaPost(
                         source="instagram",
-                        url='https://www.instagram.com/' + insta_post.username + '/',
+                        url=insta_post.url,
+                        image=insta_post.image_url,
                         title="Instagram Post",
                         author=insta_post.username,
                         content=insta_post.caption,
-                        image=insta_post.url,
                         date=insta_post.date,
                         keywords=insta_post.keywords
                     )
