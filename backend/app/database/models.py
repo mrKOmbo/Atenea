@@ -24,7 +24,7 @@ class InstagramPost(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     url: Mapped[str] = mapped_column(nullable=False, unique=True)
-    image_url: Mapped[str] = mapped_column(nullable=True)`
+    image_url: Mapped[str] = mapped_column(nullable=True)
     username: Mapped[str] = mapped_column(nullable=False)
     caption: Mapped[str] = mapped_column(nullable=False)
     likes: Mapped[int] = mapped_column(nullable=False)
