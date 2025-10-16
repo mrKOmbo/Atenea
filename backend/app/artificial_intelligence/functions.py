@@ -45,7 +45,7 @@ def is_instagram_post_related(client: OpenAI, post: InstagramPost, keywords: lis
     Use the OpenAI API to determine if an Instagram post caption is related to the given keywords.
     Returns True if related, False otherwise.
     """
-    prompt = f"Determine if the following Instagram post caption is related to these keywords: {', '.join(keywords)}.\n\nCaption: {post.caption}\n\nRespond with 'Yes' or 'No'."
+    prompt = f"Determine if the following Instagram post is related to these keywords: {', '.join(keywords)}.\n\n. Username: {post.username}\n\nCaption: {post.caption}\n\nRespond with 'Yes' or 'No'."
     response = client.chat.completions.create(
         model=AI_MODEL,
         messages=[
