@@ -9,6 +9,7 @@ from fastapi_utils.tasks import repeat_every
 
 import os
 import logging
+import asyncio
     
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -36,14 +37,14 @@ openaiClient = get_openai_client(OLLAMA_URL)
 @repeat_every(seconds=3600)
 async def scrape_news():
     logger.info("Scraping news articles...")
-    scrape_all_news(dbEngine)
+    await asyncio.to_thread(scrape_all_news, dbEngine)
 
 # Cron to process unprocessed posts every 15 minutes
 
 @repeat_every(seconds=900)
 async def process_unprocessed_posts():
     logger.info("Processing unprocessed posts...")
-    process_all_unprocessed_posts(dbEngine, openaiClient)
+    await asyncio.to_thread(process_all_unprocessed_posts, dbEngine, openaiClient)
 
 # Set up FastAPI app
 app = FastAPI()
