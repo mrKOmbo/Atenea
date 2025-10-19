@@ -63,9 +63,20 @@ def scrape_news_from_feed(engine: Engine, feed_url: str) -> None:
             else:
                 publish_date = None
 
+            # Author handling
+            author = "Unknown"
+            if not article.authors:
+                # If no authors found, use the main url domain as author
+                author = url.split("/")[2]
+            else:
+                author = ""
+                for a in article.authors:
+                    author += a + ", "
+                author = author[:-2]  # Remove trailing comma and space
+
             new_article = NewsArticle(
                 title=article.title,
-                author=article.authors[0] if article.authors else "Unknown",
+                author=author,
                 publish_date=publish_date,
                 content=article.text,
                 url=url,
