@@ -6,8 +6,8 @@ from openai import OpenAI
 from sqlalchemy import create_engine, Engine
 from sqlalchemy.orm import Session
 
-from ..artificial_intelligence.functions import is_news_article_related, is_instagram_post_related
-from .models import Base, MediaPost, NewsArticle, InstagramPost
+from ..artificial_intelligence.functions import is_post_related
+from .models import Base, MediaPost, NewsArticle
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -54,21 +54,24 @@ def process_all_unprocessed_posts(engine: Engine, openai_client: OpenAI) -> None
                     session.commit()
                     logger.debug(f"Article already processed and in MediaPost: {article.url}")
 
-                is_related = is_news_article_related(openai_client, article, RELATED_KEYWORDS)
-                if is_related:
-                    post = MediaPost(
-                        source="news",
-                        url=article.url,
-                        title=article.title,
-                        author=article.author,
-                        content=article.content,
-                        image=article.image,
-                        date=article.publish_date,
-                        keywords=article.keywords
-                    )
+                post = MediaPost(
+                    source="news",
+                    url=article.url,
+                    title=article.title,
+                    author=article.author,
+                    content=article.content,
+                    image=article.image,
+                    date=article.publish_date,
+                    keywords=article.keywords
+                )
+
+                # If the article is related to the World Cup 2026, save it as a media post
+                if is_post_related(openai_client, post, RELATED_KEYWORDS):
                     session.add(post)
 
+                # Mark the article as processed
                 article.processed = True
+
                 session.commit()
 
                 logger.info(f"Processed article: {article.title}")
@@ -76,44 +79,7 @@ def process_all_unprocessed_posts(engine: Engine, openai_client: OpenAI) -> None
                 logger.error(f"Error processing article {article.title}: {e}")
                 session.rollback()
 
-            time.sleep(1)  # To avoid hitting rate limits
-
-    # Get all unprocessed Instagram posts
-    with Session(engine) as session:
-        unprocessed_instagram_posts = session.query(InstagramPost).filter_by(processed=False).all()
-
-        for insta_post in unprocessed_instagram_posts:
-            try:
-                # Check if the post is already in MediaPost to avoid duplicates
-                if session.query(MediaPost).filter(MediaPost.url == insta_post.url).first() is not None:
-                    insta_post.processed = True
-                    session.commit()
-                    logger.debug(f"Instagram post already processed and in MediaPost: {insta_post.url}")
-
-                is_related = is_instagram_post_related(openai_client, insta_post, RELATED_KEYWORDS)
-
-                if is_related:
-                    post = MediaPost(
-                        source="instagram",
-                        url=insta_post.url,
-                        image=insta_post.image_url,
-                        title="Instagram Post",
-                        author=insta_post.username,
-                        content=insta_post.caption,
-                        date=insta_post.date,
-                        keywords=insta_post.keywords
-                    )
-                    session.add(post)
-
-                insta_post.processed = True
-                session.commit()
-
-                logger.info(f"Processed Instagram post: {insta_post.url}")
-            except Exception as e:
-                logger.error(f"Error processing Instagram post {insta_post.url}: {e}")
-                session.rollback()
-
-
+            time.sleep(1)
 
 def get_all_media_posts(engine: Engine) -> list[MediaPost]:
     """
@@ -132,11 +98,3 @@ def get_all_news_articles(engine: Engine) -> list[NewsArticle]:
         articles = session.query(NewsArticle).all()
         return articles
     
-def get_all_instagram_posts(engine: Engine) -> list[InstagramPost]:
-    """
-    Retrieve all Instagram posts from the database.
-    """
-    with Session(engine) as session:
-        logger.info("Fetching all Instagram posts from the database")
-        posts = session.query(InstagramPost).all()
-        return posts

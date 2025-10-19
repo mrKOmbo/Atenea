@@ -1,7 +1,6 @@
 fastapi[standard]
 fastapi-utils
 feedparser
-instaloader
 lxml[html_clean]
 newspaper3k
 openai
