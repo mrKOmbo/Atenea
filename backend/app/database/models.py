@@ -59,6 +59,29 @@ class RedditPost(Base):
     upvotes: Mapped[int] = mapped_column(nullable=False, default=0)
     processed: Mapped[bool] = mapped_column(nullable=False, default=False)
 
+class MastodonPost(Base):
+    """
+    Table to store Mastodon posts.
+    1. id: Primary key (integer)
+    2. mastodon_id: Mastodon post ID (string)
+    3. author: Author of the Mastodon post (string)
+    4. content: Full content of the Mastodon post (text)
+    5. image: URL of the image in the Mastodon post (string)
+    6. url: URL of the Mastodon post (string)
+    7. date: Date when the post was created (datetime)
+    8. processed: Boolean indicating if the post has been processed by AI (default: False)
+    """
+    __tablename__ = "mastodon_posts"
+
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    mastodon_id: Mapped[str] = mapped_column(nullable=False, unique=True)
+    author: Mapped[str] = mapped_column(nullable=False)
+    content: Mapped[str] = mapped_column(nullable=False)
+    image: Mapped[str] = mapped_column(nullable=True)
+    url: Mapped[str] = mapped_column(nullable=False, unique=True)
+    date: Mapped[datetime] = mapped_column(nullable=False)
+    processed: Mapped[bool] = mapped_column(nullable=False, default=False)
+
 class MediaPost(Base):
     """
     Table to store generic media posts, this is a unified table for various media types.

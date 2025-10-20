@@ -7,7 +7,7 @@ from sqlalchemy import create_engine, Engine
 from sqlalchemy.orm import Session
 
 from ..artificial_intelligence.functions import is_post_related, get_keywords_from_post
-from .models import Base, MediaPost, NewsArticle, RedditPost
+from .models import Base, MediaPost, NewsArticle, RedditPost, MastodonPost
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -126,6 +126,47 @@ def process_all_unprocessed_posts(engine: Engine, openai_client: OpenAI) -> None
 
             time.sleep(1)
 
+    # Get all unprocessed Mastodon posts
+    with Session(engine) as session:
+        unprocessed_mastodon_posts = session.query(MastodonPost).filter_by(processed=False).all()
+
+        for mastodon_post in unprocessed_mastodon_posts:
+            try:
+                # Check if the Mastodon post is already in MediaPost to avoid duplicates
+                if session.query(MediaPost).filter(MediaPost.url == mastodon_post.url).first() is not None:
+                    mastodon_post.processed = True
+                    session.commit()
+                    logger.debug(f"Mastodon post already processed and in MediaPost: {mastodon_post.url}")
+
+                post = MediaPost(
+                    source="mastodon",
+                    url=mastodon_post.url,
+                    title="Mastodon Post",
+                    author=mastodon_post.author,
+                    content=mastodon_post.content,
+                    image=mastodon_post.image if mastodon_post.image else "",
+                    date=mastodon_post.date,
+                    keywords=""
+                )
+
+                # If the Mastodon post is related to the World Cup 2026, save it as a media post
+                if is_post_related(openai_client, post, RELATED_KEYWORDS):
+                    post.keywords = get_keywords_from_post(openai_client, post)
+
+                    session.add(post)
+
+                # Mark the Mastodon post as processed
+                mastodon_post.processed = True
+
+                session.commit()
+
+                logger.info(f"Processed Mastodon post by: {mastodon_post.author}")
+            except Exception as e:
+                logger.error(f"Error processing Mastodon post by {mastodon_post.author}: {e}")
+                session.rollback()
+
+            time.sleep(1)
+
 def get_all_media_posts(engine: Engine) -> list[MediaPost]:
     """
     Retrieve all media posts from the database.
@@ -150,4 +191,13 @@ def get_all_reddit_posts(engine: Engine) -> list[RedditPost]:
     with Session(engine) as session:
         logger.info("Fetching all Reddit posts from the database")
         posts = session.query(RedditPost).all()
+        return posts
+
+def get_all_mastodon_posts(engine: Engine) -> list[MastodonPost]:
+    """
+    Retrieve all Mastodon posts from the database.
+    """
+    with Session(engine) as session:
+        logger.info("Fetching all Mastodon posts from the database")
+        posts = session.query(MastodonPost).all()
         return posts

@@ -4,6 +4,7 @@ import feedparser
 import logging
 import newspaper
 import praw
+import requests
 import time
 from datetime import datetime
 
@@ -11,7 +12,7 @@ from datetime import datetime
 from sqlalchemy import Engine
 from sqlalchemy.orm import Session
 
-from ..database.models import NewsArticle, RedditPost
+from ..database.models import NewsArticle, RedditPost, MastodonPost
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -39,6 +40,12 @@ SUBREDDITS_TO_SCRAPE = [
     "worldcup",
     "sports"
 ]
+
+MASTODON_ACCOUNTS_TO_SCRAPE = [
+    "@FIFAWorldCup@sportsbots.xyz",
+    "@FOXSoccer@sportsbots.xyz"
+]
+
 
 def scrape_news_from_feed(engine: Engine, feed_url: str) -> None:
     """
@@ -157,3 +164,69 @@ def scrape_all_reddit_news(engine: Engine, reddit_client: praw.Reddit) -> None:
     for subreddit_name in SUBREDDITS_TO_SCRAPE:
         logger.info(f"Scraping news from subreddit: {subreddit_name}")
         scrape_news_from_reddit(engine, reddit_client, subreddit_name)
+
+def get_mastodon_account_id(username: str) -> str:
+    """
+    Given a Mastodon username (e.g., @username), return the corresponding account ID.
+    """
+    # GET /api/v1/accounts/lookup?acct={username}@{instance}
+    endpoint = f"https://mastodon.social/api/v1/accounts/lookup?acct={username}"
+
+    response = requests.get(endpoint)
+    if response.status_code != 200:
+        logger.error(f"Failed to get Mastodon account ID for {username}: {response.status_code}")
+        return ""
+
+    data = response.json()
+    return data.get("id", "")
+
+def scrape_posts_from_mastodon_account(engine: Engine, account_username: str, limit: int = 10) -> None:
+    """
+    Scrape posts from a given Mastodon account and store them in the database if they are not already present.
+    Each post is represented as a dictionary with keys: title, author, publish_date, content, url.
+    """
+    account_id = get_mastodon_account_id(account_username)
+    if not account_id:
+        logger.error(f"Could not find Mastodon account ID for {account_username}")
+        return
+
+    # GET /api/v1/accounts/{user_id}/statuses
+    endpoint = f"https://mastodon.social/api/v1/accounts/{account_id}/statuses?limit={limit}"
+
+    response = requests.get(endpoint)
+    if response.status_code != 200:
+        logger.error(f"Failed to get Mastodon posts for {account_username}: {response.status_code}")
+        return
+
+    posts = response.json()
+
+    with Session(engine) as session:
+
+        for post in posts:
+            post_id = post.get("id", "")
+            if session.query(MastodonPost).filter(MastodonPost.mastodon_id == post_id).first() is not None:
+                logger.debug(f"Mastodon post already in database: {post_id}")
+                continue
+
+            publish_date = datetime.fromisoformat(post.get("created_at", "").replace("Z", "+00:00"))
+            new_post = MastodonPost(
+                mastodon_id=post_id,
+                author=account_username,
+                content=post.get("content", ""),
+                image=post.get("media_attachments", [{}])[0].get("preview_url", "") if post.get("media_attachments") else "",
+                url=post.get("url", ""),
+                date=publish_date
+            )
+
+            session.add(new_post)
+            logger.info(f"Added new Mastodon post to database: {post_id}")
+        session.commit()
+        logger.info("All new Mastodon posts have been committed to the database.")
+
+def scrape_all_mastodon_news(engine: Engine) -> None:
+    """
+    Scrape posts from all predefined Mastodon accounts and store them in the database.
+    """
+    for account_username in MASTODON_ACCOUNTS_TO_SCRAPE:
+        logger.info(f"Scraping posts from Mastodon account: {account_username}")
+        scrape_posts_from_mastodon_account(engine, account_username)

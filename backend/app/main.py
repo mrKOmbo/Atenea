@@ -1,7 +1,7 @@
 # Main application file for the FastAPI backend
 from .artificial_intelligence.functions import get_openai_client
-from .database.functions import get_all_news_articles, get_engine, get_all_media_posts, process_all_unprocessed_posts, get_all_reddit_posts
-from .social_media.functions import scrape_all_news, log_into_reddit, scrape_all_reddit_news
+from .database.functions import get_all_mastodon_posts, get_all_news_articles, get_engine, get_all_media_posts, process_all_unprocessed_posts, get_all_reddit_posts
+from .social_media.functions import scrape_all_news, log_into_reddit, scrape_all_reddit_news, scrape_all_mastodon_news
 
 from dotenv import load_dotenv
 from fastapi import FastAPI
@@ -56,6 +56,13 @@ async def scrape_reddit():
     logger.info("Scraping Reddit posts...")
     await asyncio.to_thread(scrape_all_reddit_news, dbEngine, reddit)
 
+## Cron to scrape Mastodon every day
+
+@repeat_every(seconds=86400)
+async def scrape_mastodon():
+    logger.info("Scraping Mastodon posts...")
+    await asyncio.to_thread(scrape_all_mastodon_news, dbEngine)
+
 # Cron to process unprocessed posts every 15 minutes
 
 @repeat_every(seconds=900)
@@ -73,6 +80,7 @@ async def sync_all():
     """
     await scrape_news()
     await scrape_reddit()
+    await scrape_mastodon()
     await process_unprocessed_posts()
     return {"status": "Sync completed"}
 
@@ -100,6 +108,14 @@ async def sync_reddit():
     await scrape_reddit()
     return {"status": "Reddit sync completed"}
 
+@app.get("/sync/mastodon")
+async def sync_mastodon():
+    """
+    Endpoint to manually trigger Mastodon scraping.
+    """
+    await scrape_mastodon()
+    return {"status": "Mastodon sync completed"}
+
 @app.get("/api/posts")
 async def get_posts():
     """
@@ -124,3 +140,10 @@ async def get_reddit_posts():
     posts = get_all_reddit_posts(dbEngine)
     return {"posts": [post.__dict__ for post in posts]}
 
+@app.get("/api/posts/mastodon")
+async def get_mastodon_posts():
+    """
+    Endpoint to retrieve all Mastodon posts.
+    """
+    posts = get_all_mastodon_posts(dbEngine)
+    return {"posts": [post.__dict__ for post in posts]}
