@@ -36,9 +36,9 @@ NEWS_RSS_FEEDS = [
 SUBREDDITS_TO_SCRAPE = [
     "soccer",
     "football",
-    "worldcup"
+    "worldcup",
+    "sports"
 ]
-
 
 def scrape_news_from_feed(engine: Engine, feed_url: str) -> None:
     """
