@@ -2,8 +2,9 @@
 
 import logging
 import time
+from datetime import date
 from openai import OpenAI
-from sqlalchemy import create_engine, Engine
+from sqlalchemy import create_engine, Engine, or_
 from sqlalchemy.orm import Session
 
 from ..artificial_intelligence.functions import is_post_related, get_keywords_from_post
@@ -167,12 +168,41 @@ def process_all_unprocessed_posts(engine: Engine, openai_client: OpenAI) -> None
 
             time.sleep(1)
 
-def get_all_media_posts(engine: Engine) -> list[MediaPost]:
+def get_all_media_posts(
+    engine: Engine,
+    min_likes: int = 0,
+    start_date: date | None = None,
+    end_date: date | None = None,
+    keywords: str | None = None,
+    source: str | None = None,
+    author: str | None = None,
+) -> list[MediaPost]:
     """
-    Retrieve all media posts from the database.
+    Retrieve all media posts from the database with optional filters.
     """
     with Session(engine) as session:
-        posts = session.query(MediaPost).all()
+        query = session.query(MediaPost)
+
+        if min_likes > 0:
+            query = query.filter(MediaPost.likes >= min_likes)
+
+        if start_date:
+            query = query.filter(MediaPost.date >= start_date)
+
+        if end_date:
+            query = query.filter(MediaPost.date <= end_date)
+
+        if keywords:
+            keyword_list = [keyword.strip() for keyword in keywords.split(",")]
+            query = query.filter(or_(*[MediaPost.keywords.ilike(f"%{keyword}%") for keyword in keyword_list]))
+
+        if source:
+            query = query.filter(MediaPost.source.ilike(f"%{source}%"))
+
+        if author:
+            query = query.filter(MediaPost.author.ilike(f"%{author}%"))
+
+        posts = query.all()
         return posts
 
 def get_all_news_articles(engine: Engine) -> list[NewsArticle]:

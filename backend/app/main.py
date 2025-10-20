@@ -3,8 +3,9 @@ from .artificial_intelligence.functions import get_openai_client
 from .database.functions import get_all_mastodon_posts, get_all_news_articles, get_engine, get_all_media_posts, process_all_unprocessed_posts, get_all_reddit_posts
 from .social_media.functions import scrape_all_news, log_into_reddit, scrape_all_reddit_news, scrape_all_mastodon_news
 
+from datetime import date
 from dotenv import load_dotenv
-from fastapi import FastAPI
+from fastapi import FastAPI, Query
 from fastapi_utils.tasks import repeat_every
 
 import os
@@ -117,12 +118,30 @@ async def sync_mastodon():
     return {"status": "Mastodon sync completed"}
 
 @app.get("/api/posts")
-async def get_posts():
+async def get_posts(
+    min_likes: int = Query(0, description="Minimum number of likes"),
+    start_date: date | None = Query(None, description="Start date for filtering (YYYY-MM-DD)"),
+    end_date: date | None = Query(None, description="End date for filtering (YYYY-MM-DD)"),
+    keywords: str | None = Query(None, description="Keywords to filter by, comma-separated"),
+    source: str | None = Query(None, description="Source to filter by (e.g., news, reddit)"),
+    author: str | None = Query(None, description="Author to filter by"),
+):
     """
-    Endpoint to retrieve all media posts.
+    Endpoint to retrieve all media posts with optional filters.
     """
-    posts = get_all_media_posts(dbEngine)
-    return {"posts": [post.__dict__ for post in posts]}
+    posts = get_all_media_posts(
+        dbEngine,
+        min_likes=min_likes,
+        start_date=start_date,
+        end_date=end_date,
+        keywords=keywords,
+        source=source,
+        author=author,
+    )
+    return {"posts": [
+        {key: value for key, value in post.__dict__.items() if key != '_sa_instance_state'}
+        for post in posts
+    ]}
 
 @app.get("/api/posts/news")
 async def get_news_posts():
@@ -130,7 +149,10 @@ async def get_news_posts():
     Endpoint to retrieve all news posts.
     """
     posts = get_all_news_articles(dbEngine)
-    return {"posts": [post.__dict__ for post in posts]}
+    return {"posts": [
+        {key: value for key, value in post.__dict__.items() if key != '_sa_instance_state'}
+        for post in posts
+    ]}
 
 @app.get("/api/posts/reddit")
 async def get_reddit_posts():
@@ -138,7 +160,10 @@ async def get_reddit_posts():
     Endpoint to retrieve all Reddit posts.
     """
     posts = get_all_reddit_posts(dbEngine)
-    return {"posts": [post.__dict__ for post in posts]}
+    return {"posts": [
+        {key: value for key, value in post.__dict__.items() if key != '_sa_instance_state'}
+        for post in posts
+    ]}
 
 @app.get("/api/posts/mastodon")
 async def get_mastodon_posts():
@@ -146,4 +171,7 @@ async def get_mastodon_posts():
     Endpoint to retrieve all Mastodon posts.
     """
     posts = get_all_mastodon_posts(dbEngine)
-    return {"posts": [post.__dict__ for post in posts]}
+    return {"posts": [
+        {key: value for key, value in post.__dict__.items() if key != '_sa_instance_state'}
+        for post in posts
+    ]}
