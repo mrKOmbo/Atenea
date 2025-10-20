@@ -1,0 +1,294 @@
+/*
+  Localizable.strings
+  Atenea
+  Dutch Localization
+*/
+
+// MARK: - Main Tabs
+"tab.map" = "Kaart";
+"tab.community" = "Gemeenschap";
+"tab.album" = "Album";
+
+// MARK: - Common Actions
+"action.start" = "Start";
+"action.next" = "Volgende";
+"action.skip" = "Overslaan";
+"action.cancel" = "Annuleren";
+"action.save" = "Opslaan";
+"action.delete" = "Verwijderen";
+"action.update" = "Bijwerken";
+"action.retry" = "Opnieuw proberen";
+"action.confirm" = "Bevestigen";
+"action.accept" = "Accepteren";
+"action.openSettings" = "Open Instellingen";
+
+// MARK: - Status Messages
+"status.loading" = "Laden...";
+"status.loadingPosts" = "Berichten laden...";
+"status.error" = "Fout";
+"status.errorLoadingPosts" = "Fout bij laden van berichten";
+"status.noPostsAvailable" = "Geen berichten beschikbaar";
+"status.confirmed" = "Bevestigd";
+"status.pending" = "In behandeling";
+"status.cancelled" = "Geannuleerd";
+"status.waiting" = "Wachten";
+
+// MARK: - Onboarding
+"onboarding.title" = "Atenea";
+"onboarding.subtitle" = "Jouw metgezel voor het WK 2026";
+"onboarding.venues" = "16 Stadions";
+"onboarding.scanner" = "AR Scanner";
+"onboarding.album" = "Album";
+
+// MARK: - Tutorial
+"tutorial.welcome" = "Welkom bij Atenea";
+"tutorial.welcomeDesc" = "Ontdek de stadions van het WK 2026. Tik op de markers om details te zien en stickers te verzamelen.";
+"tutorial.menu" = "Functiemenu";
+"tutorial.menuDesc" = "Hier vind je aanbevelingen, AR scanner, kalender en meer functies.";
+"tutorial.search" = "Vind Plekken Dichtbij";
+"tutorial.searchDesc" = "Druk op categorieën zoals restaurants of hotels om plekken bij je in de buurt te vinden.";
+"tutorial.community" = "Gemeenschap Tab";
+"tutorial.communityDesc" = "Ontdek Instagram berichten over het WK gedeeld door de gemeenschap.";
+"tutorial.album" = "Stickeralbum";
+"tutorial.albumDesc" = "Verzamel stickers van alle WK stadions en teams. Bezoek plekken om ze te ontgrendelen.";
+
+// MARK: - Community
+"community.filter.all" = "Alle";
+"community.filter.worldCup" = "WK 2026";
+"community.filter.trending" = "Trending";
+"community.filter.creator" = "Maker";
+
+// MARK: - Album
+"album.stickers" = "stickers";
+"album.of" = "van";
+"album.completed" = "voltooid";
+"album.new" = "NIEUW";
+
+// MARK: - Menu
+"menu.main" = "Hoofdmenu";
+"menu.navigation" = "NAVIGATIE";
+"menu.venueMap" = "Stadionkaart";
+"menu.myLocation" = "Mijn Locatie";
+"menu.worldCup" = "WERELDKAMPIOENSCHAP";
+"menu.calendar" = "Kalender";
+"menu.matches" = "Wedstrijden";
+"menu.favorites" = "Favorieten";
+"menu.transport" = "VERVOER";
+"menu.transportModes" = "Vervoersmiddelen";
+"menu.routes" = "Routes";
+"menu.others" = "OVERIGE";
+"menu.ar" = "Augmented Reality";
+"menu.scanPlayers" = "Scan Spelers";
+"menu.information" = "Informatie";
+"menu.settings" = "Instellingen";
+"menu.version" = "Versie 1.0.0";
+"menu.cameraPermission" = "Cameratoestemming Vereist";
+"menu.cameraPermissionDesc" = "Om Augmented Reality te gebruiken, moet je cameratoegang inschakelen in Instellingen.";
+
+// MARK: - Profile
+"profile.menu" = "Menu";
+"profile.mapType" = "Kaarttype";
+"profile.language" = "Taal";
+"profile.claudeAPI" = "Claude API";
+"profile.configured" = "Geconfigureerd";
+"profile.notConfigured" = "Niet geconfigureerd";
+"profile.scheduleMatch" = "Plan Wedstrijd";
+"profile.selectVenue" = "Selecteer Stadion";
+"profile.selectVenueDesc" = "Kies het stadion waar de wedstrijd gespeeld wordt";
+"profile.seats" = "Stoelen";
+"profile.dateTime" = "Datum en Tijd";
+"profile.status" = "Status";
+"profile.confirmReservation" = "Bevestig Reservering";
+"profile.reservationConfirmed" = "Reservering Bevestigd!";
+"profile.yourMatchAt" = "Je wedstrijd in";
+"profile.seatsPlaceholder" = "Bijv.: Sectie A, Rij 12...";
+"profile.capacity" = "Capaciteit";
+"profile.venue" = "Stadion";
+"profile.completeData" = "Vul de gegevens in om je wedstrijd te reserveren";
+
+// MARK: - Venues
+"venue.azteca" = "Azteca Stadion";
+"venue.bbva" = "BBVA Stadion";
+"venue.akron" = "Akron Stadion";
+"venue.sofi" = "SoFi Stadium";
+"venue.metlife" = "MetLife Stadium";
+"venue.att" = "AT&T Stadium";
+"venue.arrowhead" = "Arrowhead Stadium";
+"venue.nrg" = "NRG Stadium";
+"venue.hardrock" = "Hard Rock Stadium";
+"venue.mercedes" = "Mercedes-Benz Stadium";
+"venue.lumen" = "Lumen Field";
+"venue.levis" = "Levi's Stadium";
+"venue.gillette" = "Gillette Stadium";
+"venue.lincoln" = "Lincoln Financial Field";
+"venue.bcplace" = "BC Place";
+"venue.bmo" = "BMO Field";
+
+// MARK: - FIFA World Cup
+"worldcup.title" = "FIFA Wereldkampioenschap 2026™";
+
+// MARK: - Map & Search
+"map.search" = "Zoeken";
+"map.restaurant" = "Restaurant";
+"map.coffee" = "Koffie";
+"map.bar" = "Bar";
+"map.hotel" = "Hotel";
+"map.museum" = "Museum";
+"map.gym" = "Sportschool";
+"map.park" = "Park";
+"map.clear" = "Wissen";
+"map.recommendations" = "Aanbevelingen";
+"map.suggestions" = "Suggesties";
+"map.dinner" = "Diner";
+"map.bars" = "Bars";
+"map.hotels" = "Hotels";
+"map.museums" = "Musea";
+"map.gyms" = "Sportscholen";
+"map.parks" = "Parken";
+"map.findTransport" = "Vind vervoer";
+"map.matchScheduled" = "Wedstrijd Gepland";
+"map.yourLocation" = "Je locatie";
+"map.myReservations" = "Mijn Reserveringen";
+"map.activeReservations" = "%d actieve reserveringen";
+"map.noReservations" = "Je hebt geen reserveringen";
+"map.exploreVenues" = "Verken de stadions en reserveer je plek\nvoor de WK wedstrijden 2026";
+
+// MARK: - Navigation
+"navigation.startNavigation" = "Start Navigatie";
+"navigation.endNavigation" = "Beëindig Navigatie";
+"navigation.arriving" = "Aankomst";
+"navigation.inProgress" = "Bezig";
+
+// MARK: - Transport
+"transport.walking" = "Lopen";
+"transport.driving" = "Rijden";
+"transport.transit" = "Openbaar Vervoer";
+"transport.cycling" = "Fietsen";
+
+// MARK: - AR Scanner
+"ar.scanPlayer" = "Scan Speler";
+"ar.scanning" = "Scannen...";
+"ar.pointAtPlayer" = "Richt op een spelerkaart of poster";
+"ar.playerDetected" = "Speler Gedetecteerd!";
+"ar.scanPoster" = "Scan Poster";
+"ar.discover" = "Ontdek informatie over elk stadion";
+"ar.startScan" = "Start Scannen";
+"ar.scanPlayerCard" = "Scan een Spelerskaart";
+"ar.pointCamera" = "Richt je camera op de spelerafbeelding";
+"ar.arReady" = "AR Klaar";
+"ar.playerFound" = "Speler Gevonden!";
+"ar.openingAlbum" = "Album openen op pagina %d...";
+"ar.getCloser" = "Kom dichter bij het stadion";
+"ar.mustBeWithin" = "Je moet binnen 100m zijn";
+"ar.noVenuesNearby" = "Geen stadions in de buurt";
+"ar.visitVenue" = "Bezoek een WK 2026 stadion";
+"ar.collectStickers" = "Verzamel Stickers met AR";
+"ar.stickersCollected" = "Stickers Verzameld!";
+"ar.stickerAdded" = "+1 Sticker";
+"ar.initializing" = "AR initialiseren...";
+"ar.preparingDetection" = "Posterdetectie voorbereiden";
+"ar.worldCupAR" = "WK 2026 AR";
+"ar.worldCupVenue" = "🏟️ WK 2026 STADION";
+"ar.addToAlbum" = "Toevoegen aan Album";
+"ar.collectThisVenue" = "Verzamel dit stadion";
+"ar.viewOnMap" = "Bekijk op Kaart";
+"ar.viewAlbum" = "Bekijk %@ album";
+"ar.pointAtPoster" = "Richt op een WK 2026 poster";
+"ar.keepPosterCentered" = "Houd de poster in het midden van het scherm";
+"ar.openInAppleMaps" = "Open in Apple Maps";
+
+// MARK: - Settings
+"settings.title" = "Instellingen";
+"settings.apiKey" = "API Sleutel";
+"settings.notifications" = "Meldingen";
+"settings.privacy" = "Privacy";
+"settings.about" = "Over";
+
+// MARK: - Errors
+"error.general" = "Er is een fout opgetreden";
+"error.network" = "Netwerkfout";
+"error.noInternet" = "Geen internetverbinding";
+"error.serverError" = "Serverfout";
+
+// MARK: - Time Formats
+"time.justNow" = "Zojuist";
+"time.minutesAgo" = "%d minu(u)t(en) geleden";
+"time.hoursAgo" = "%d u(u)r(en) geleden";
+"time.daysAgo" = "%d dag(en) geleden";
+
+// MARK: - Login
+"login.welcome" = "Welkom bij";
+"login.appName" = "Atenea";
+"login.emailOrPhone" = "Email of Telefoon";
+"login.emailPlaceholder" = "Voer je email of telefoon in";
+"login.terms" = "Door een account aan te maken, ga ik akkoord met de";
+"login.termsLink" = "Servicevoorwaarden";
+"login.and" = "en";
+"login.privacyLink" = "Privacyverklaring";
+"login.continue" = "Doorgaan";
+"login.or" = "of";
+"login.continueWithGoogle" = "Doorgaan met Google";
+"login.continueWithApple" = "Doorgaan met Apple";
+"login.help" = "Help";
+"login.close" = "Sluiten";
+"login.noAccount" = "Geen account?";
+"login.signUp" = "Aanmelden";
+
+// MARK: - Registration
+"register.title" = "Account Aanmaken";
+"register.subtitle" = "Word lid van de Atenea gemeenschap";
+"register.name" = "Volledige Naam";
+"register.namePlaceholder" = "Voer je volledige naam in";
+"register.age" = "Leeftijd";
+"register.agePlaceholder" = "Voer je leeftijd in";
+"register.origin" = "Herkomst";
+"register.originPlaceholder" = "Selecteer je land";
+"register.email" = "Email";
+"register.emailPlaceholder" = "Voer je email in";
+"register.phone" = "Telefoonnummer";
+"register.phonePlaceholder" = "Voer je telefoonnummer in";
+"register.createAccount" = "Account Aanmaken";
+"register.alreadyHaveAccount" = "Heb je al een account?";
+"register.signIn" = "Inloggen";
+
+// MARK: - Venue Details
+"venue.howToGet" = "Hoe kom je er";
+"venue.matches" = "WEDSTRIJDEN";
+"venue.funFacts" = "WEETJES";
+"venue.moreMatches" = "+%d meer wedstrijden";
+"venue.moreFacts" = "+%d meer weetjes";
+"venue.close" = "Sluiten";
+"venue.capacity" = "Capaciteit";
+"venue.venues" = "%d stadions";
+
+// MARK: - Album
+"album.openingAlbum" = "Album Openen";
+"album.preparingPages" = "Pagina's voorbereiden...";
+"album.swipeToFlip" = "Veeg om pagina's om te slaan";
+
+// MARK: - Menu (Hamburger)
+"menu.worldCup2026" = "WK 2026";
+"menu.mainMenu" = "Hoofdmenu";
+"menu.venueMap" = "Stadionkaart";
+"menu.myLocation" = "Mijn Locatie";
+"menu.worldCupSection" = "WERELDKAMPIOENSCHAP";
+"menu.transportSection" = "VERVOER";
+"menu.othersSection" = "OVERIGE";
+"menu.fifaWorldCup" = "FIFA Wereldkampioenschap 2026";
+"menu.cameraAccess" = "Om Augmented Reality te gebruiken, moet je cameratoegang inschakelen in Instellingen > Atenea > Camera";
+"menu.countries" = "16 Stadions • 3 Landen";
+
+// MARK: - Trip
+"trip.started" = "Reis Gestart!";
+"trip.navigatingTo" = "Navigeren naar";
+"trip.eta" = "ETA";
+"trip.distance" = "Afstand";
+"trip.startNavigation" = "Start Navigatie";
+"trip.endTrip" = "Beëindig Reis";
+
+// MARK: - Debug
+"debug.liveActivityTest" = "🧪 Live Activity Test";
+"debug.startActivity" = "Start Live Activity";
+"debug.updateActivity" = "Update Live Activity";
+"debug.stopActivity" = "Stop Live Activity";
+"debug.systemInfo" = "Systeeminformatie:";

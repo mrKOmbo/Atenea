@@ -1,0 +1,331 @@
+/*
+  Localizable.strings
+  Atenea
+  Portuguese Localization
+*/
+
+// MARK: - Main Tabs
+"tab.map" = "Mapa";
+"tab.community" = "Comunidade";
+"tab.album" = "Álbum";
+
+// MARK: - Common Actions
+"action.start" = "Começar";
+"action.next" = "Próximo";
+"action.skip" = "Pular";
+"action.cancel" = "Cancelar";
+"action.save" = "Salvar";
+"action.delete" = "Excluir";
+"action.update" = "Atualizar";
+"action.retry" = "Tentar novamente";
+"action.confirm" = "Confirmar";
+"action.accept" = "Aceitar";
+"action.openSettings" = "Abrir Configurações";
+
+// MARK: - Status Messages
+"status.loading" = "Carregando...";
+"status.loadingPosts" = "Carregando postagens...";
+"status.error" = "Erro";
+"status.errorLoadingPosts" = "Erro ao carregar postagens";
+"status.noPostsAvailable" = "Nenhuma postagem disponível";
+"status.confirmed" = "Confirmado";
+"status.pending" = "Pendente";
+"status.cancelled" = "Cancelado";
+"status.waiting" = "Aguardando";
+
+// MARK: - Onboarding
+"onboarding.title" = "Atenea";
+"onboarding.subtitle" = "Seu companheiro para a Copa do Mundo 2026";
+"onboarding.venues" = "16 Estádios";
+"onboarding.scanner" = "Scanner AR";
+"onboarding.album" = "Álbum";
+
+// MARK: - Tutorial
+"tutorial.welcome" = "Bem-vindo ao Atenea";
+"tutorial.welcomeDesc" = "Descubra os estádios da Copa do Mundo 2026. Toque nos marcadores para ver detalhes e colecionar figurinhas.";
+"tutorial.menu" = "Menu de Recursos";
+"tutorial.menuDesc" = "Aqui você encontrará recomendações, scanner AR, calendário e mais recursos.";
+"tutorial.search" = "Encontre Lugares Próximos";
+"tutorial.searchDesc" = "Pressione em categorias como restaurantes ou hotéis para encontrar lugares perto de você.";
+"tutorial.community" = "Aba Comunidade";
+"tutorial.communityDesc" = "Descubra postagens do Instagram sobre a Copa do Mundo compartilhadas pela comunidade.";
+"tutorial.album" = "Álbum de Figurinhas";
+"tutorial.albumDesc" = "Coleção de figurinhas de todos os estádios e times da Copa do Mundo. Visite lugares para desbloqueá-las.";
+
+// MARK: - Community
+"community.filter.all" = "Todos";
+"community.filter.worldCup" = "Copa do Mundo 2026";
+"community.filter.trending" = "Em Alta";
+"community.filter.creator" = "Criador";
+
+// MARK: - Album
+"album.stickers" = "figurinhas";
+"album.of" = "de";
+"album.completed" = "completo";
+"album.new" = "NOVO";
+
+// MARK: - Menu
+"menu.main" = "Menu Principal";
+"menu.navigation" = "NAVEGAÇÃO";
+"menu.venueMap" = "Mapa de Estádios";
+"menu.myLocation" = "Minha Localização";
+"menu.worldCup" = "COPA DO MUNDO";
+"menu.calendar" = "Calendário";
+"menu.matches" = "Partidas";
+"menu.favorites" = "Favoritos";
+"menu.transport" = "TRANSPORTE";
+"menu.transportModes" = "Meios de Transporte";
+"menu.routes" = "Rotas";
+"menu.others" = "OUTROS";
+"menu.ar" = "Realidade Aumentada";
+"menu.scanPlayers" = "Escanear Jogadores";
+"menu.information" = "Informação";
+"menu.settings" = "Configurações";
+"menu.version" = "Versão 1.0.0";
+"menu.cameraPermission" = "Permissão de Câmera Necessária";
+"menu.cameraPermissionDesc" = "Para usar a Realidade Aumentada, você precisa habilitar o acesso à câmera nas Configurações.";
+
+// MARK: - Profile
+"profile.menu" = "Menu";
+"profile.mapType" = "Tipo de Mapa";
+"profile.language" = "Idioma";
+"profile.claudeAPI" = "API Claude";
+"profile.configured" = "Configurado";
+"profile.notConfigured" = "Não configurado";
+"profile.scheduleMatch" = "Agendar Partida";
+"profile.selectVenue" = "Selecionar Estádio";
+"profile.selectVenueDesc" = "Escolha o estádio onde a partida será jogada";
+"profile.seats" = "Assentos";
+"profile.dateTime" = "Data e Hora";
+"profile.status" = "Status";
+"profile.confirmReservation" = "Confirmar Reserva";
+"profile.reservationConfirmed" = "Reserva Confirmada!";
+"profile.yourMatchAt" = "Sua partida em";
+"profile.seatsPlaceholder" = "Ex: Seção A, Fila 12...";
+"profile.capacity" = "Capacidade";
+
+// MARK: - Venues
+"venue.azteca" = "Estádio Azteca";
+"venue.bbva" = "Estádio BBVA";
+"venue.akron" = "Estádio Akron";
+"venue.sofi" = "SoFi Stadium";
+"venue.metlife" = "MetLife Stadium";
+"venue.att" = "AT&T Stadium";
+"venue.arrowhead" = "Arrowhead Stadium";
+"venue.nrg" = "NRG Stadium";
+"venue.hardrock" = "Hard Rock Stadium";
+"venue.mercedes" = "Mercedes-Benz Stadium";
+"venue.lumen" = "Lumen Field";
+"venue.levis" = "Levi's Stadium";
+"venue.gillette" = "Gillette Stadium";
+"venue.lincoln" = "Lincoln Financial Field";
+"venue.bcplace" = "BC Place";
+"venue.bmo" = "BMO Field";
+
+// MARK: - FIFA World Cup
+"worldcup.title" = "Copa do Mundo FIFA 2026™";
+
+// MARK: - Map & Search
+"map.search" = "Buscar";
+"map.restaurant" = "Restaurante";
+"map.coffee" = "Café";
+"map.bar" = "Bar";
+"map.hotel" = "Hotel";
+"map.museum" = "Museu";
+"map.gym" = "Academia";
+"map.park" = "Parque";
+"map.clear" = "Limpar";
+"map.recommendations" = "Recomendações";
+
+// MARK: - Navigation
+"navigation.startNavigation" = "Iniciar Navegação";
+"navigation.endNavigation" = "Finalizar Navegação";
+"navigation.arriving" = "Chegando";
+"navigation.inProgress" = "Em Andamento";
+
+// MARK: - Transport
+"transport.walking" = "Caminhando";
+"transport.driving" = "Dirigindo";
+"transport.transit" = "Transporte Público";
+"transport.cycling" = "Bicicleta";
+
+// MARK: - AR Scanner
+"ar.scanPlayer" = "Escanear Jogador";
+"ar.scanning" = "Escaneando...";
+"ar.pointAtPlayer" = "Aponte para um cartão ou pôster de jogador";
+"ar.playerDetected" = "Jogador Detectado!";
+
+// MARK: - Settings
+"settings.title" = "Configurações";
+"settings.apiKey" = "Chave API";
+"settings.notifications" = "Notificações";
+"settings.privacy" = "Privacidade";
+"settings.about" = "Sobre";
+
+// MARK: - Errors
+"error.general" = "Ocorreu um erro";
+"error.network" = "Erro de rede";
+"error.noInternet" = "Sem conexão com a internet";
+"error.serverError" = "Erro do servidor";
+
+// MARK: - Time Formats
+"time.justNow" = "Agora mesmo";
+"time.minutesAgo" = "%d minuto(s) atrás";
+"time.hoursAgo" = "%d hora(s) atrás";
+"time.daysAgo" = "%d dia(s) atrás";
+
+// MARK: - Login
+"login.welcome" = "Bem-vindo ao";
+"login.appName" = "Atenea";
+"login.emailOrPhone" = "Email ou Telefone";
+"login.emailPlaceholder" = "Digite seu email ou telefone";
+"login.terms" = "Ao criar uma conta, concordo com os";
+"login.termsLink" = "Termos de serviço";
+"login.and" = "e";
+"login.privacyLink" = "Aviso de Privacidade";
+"login.continue" = "Continuar";
+"login.or" = "ou";
+"login.continueWithGoogle" = "Continuar com Google";
+"login.continueWithApple" = "Continuar com Apple";
+"login.help" = "Ajuda";
+"login.close" = "Fechar";
+"login.noAccount" = "Não tem uma conta?";
+"login.signUp" = "Cadastre-se";
+
+// MARK: - Registration
+"register.title" = "Criar Conta";
+"register.subtitle" = "Junte-se à comunidade Atenea";
+"register.name" = "Nome Completo";
+"register.namePlaceholder" = "Digite seu nome completo";
+"register.age" = "Idade";
+"register.agePlaceholder" = "Digite sua idade";
+"register.origin" = "Local de Origem";
+"register.originPlaceholder" = "Selecione seu país";
+"register.email" = "Email";
+"register.emailPlaceholder" = "Digite seu email";
+"register.phone" = "Número de Telefone";
+"register.phonePlaceholder" = "Digite seu número de telefone";
+"register.createAccount" = "Criar Conta";
+"register.alreadyHaveAccount" = "Já tem uma conta?";
+"register.signIn" = "Entrar";
+
+// MARK: - Venue Details
+"venue.howToGet" = "Como chegar";
+"venue.matches" = "PARTIDAS";
+"venue.funFacts" = "CURIOSIDADES";
+"venue.moreMatches" = "+%d mais partidas";
+"venue.moreFacts" = "+%d mais curiosidades";
+"venue.close" = "Fechar";
+"venue.capacity" = "Capacidade";
+"venue.venues" = "%d estádios";
+
+// MARK: - AR Scanner
+"ar.scanPoster" = "Escanear Pôster";
+"ar.discover" = "Descubra informações sobre cada estádio";
+"ar.startScan" = "Iniciar Escaneamento";
+"ar.scanPlayerCard" = "Escanear um Cartão de Jogador";
+"ar.pointCamera" = "Aponte sua câmera para a imagem do jogador";
+"ar.arReady" = "AR Pronto";
+"ar.playerFound" = "Jogador Encontrado!";
+"ar.openingAlbum" = "Abrindo álbum na página %d...";
+"ar.scanning" = "Escaneando...";
+"ar.getCloser" = "Chegue mais perto do estádio";
+"ar.mustBeWithin" = "Você deve estar a menos de 100m";
+"ar.noVenuesNearby" = "Nenhum estádio próximo";
+"ar.visitVenue" = "Visite um estádio da Copa do Mundo 2026";
+"ar.collectStickers" = "Colecione Figurinhas com AR";
+"ar.stickersCollected" = "Figurinhas Coletadas!";
+"ar.stickerAdded" = "+1 Figurinha";
+"ar.initializing" = "Inicializando AR...";
+"ar.preparingDetection" = "Preparando detecção de pôsteres";
+"ar.worldCupAR" = "Copa do Mundo 2026 AR";
+"ar.worldCupVenue" = "🏟️ ESTÁDIO DA COPA DO MUNDO 2026";
+"ar.addToAlbum" = "Adicionar ao Álbum";
+"ar.collectThisVenue" = "Colecionar este estádio";
+"ar.viewOnMap" = "Ver no Mapa";
+"ar.viewAlbum" = "Ver álbum de %@";
+"ar.pointAtPoster" = "Aponte para um pôster da Copa do Mundo 2026";
+"ar.keepPosterCentered" = "Mantenha o pôster no centro da tela";
+"ar.openInAppleMaps" = "Abrir no Apple Maps";
+
+// MARK: - Album
+"album.openingAlbum" = "Abrindo Álbum";
+"album.preparingPages" = "Preparando as páginas...";
+"album.swipeToFlip" = "Deslize para virar páginas";
+
+// MARK: - Menu (Hamburger)
+"menu.worldCup2026" = "Copa do Mundo 2026";
+"menu.mainMenu" = "Menu Principal";
+"menu.navigation" = "NAVEGAÇÃO";
+"menu.venueMap" = "Mapa de Estádios";
+"menu.myLocation" = "Minha Localização";
+"menu.worldCupSection" = "COPA DO MUNDO";
+"menu.calendar" = "Calendário";
+"menu.matches" = "Partidas";
+"menu.favorites" = "Favoritos";
+"menu.transportSection" = "TRANSPORTE";
+"menu.transportModes" = "Meios de Transporte";
+"menu.routes" = "Rotas";
+"menu.othersSection" = "OUTROS";
+"menu.ar" = "Realidade Aumentada";
+"menu.scanPlayers" = "Escanear Jogadores";
+"menu.information" = "Informação";
+"menu.settings" = "Configurações";
+"menu.fifaWorldCup" = "Copa do Mundo FIFA 2026";
+"menu.version" = "Versão 1.0.0";
+"menu.cameraAccess" = "Para usar a Realidade Aumentada, você precisa habilitar o acesso à câmera em Configurações > Atenea > Câmera";
+"menu.countries" = "16 Estádios • 3 Países";
+
+// MARK: - Profile Menu
+"profile.menu" = "Menu";
+"profile.mapType" = "Tipo de Mapa";
+"profile.language" = "Idioma";
+"profile.claudeAPI" = "API Claude";
+"profile.configured" = "Configurado";
+"profile.notConfigured" = "Não configurado";
+"profile.scheduleMatch" = "Agendar Partida";
+"profile.selectVenue" = "Selecionar Estádio";
+"profile.selectVenueDesc" = "Escolha o estádio onde a partida será jogada";
+"profile.seats" = "Assentos";
+"profile.dateTime" = "Data e Hora";
+"profile.status" = "Status";
+"profile.confirmReservation" = "Confirmar Reserva";
+"profile.reservationConfirmed" = "Reserva Confirmada!";
+"profile.yourMatchAt" = "Sua partida em";
+"profile.seatsPlaceholder" = "Ex: Seção A, Fila 12...";
+"profile.capacity" = "Capacidade";
+"profile.venue" = "Estádio";
+"profile.completeData" = "Complete os dados para reservar sua partida";
+
+// MARK: - Map
+"map.clear" = "Limpar";
+"map.suggestions" = "Sugestões";
+"map.dinner" = "Jantar";
+"map.coffee" = "Café";
+"map.bars" = "Bares";
+"map.hotels" = "Hotéis";
+"map.museums" = "Museus";
+"map.gyms" = "Academias";
+"map.parks" = "Parques";
+"map.findTransport" = "Buscar transporte";
+"map.matchScheduled" = "Partida Agendada";
+"map.yourLocation" = "Sua localização";
+"map.myReservations" = "Minhas Reservas";
+"map.activeReservations" = "%d reservas ativas";
+"map.noReservations" = "Você não tem reservas";
+"map.exploreVenues" = "Explore os estádios e reserve seu lugar\npara as partidas da Copa do Mundo 2026";
+
+// MARK: - Trip
+"trip.started" = "Viagem Iniciada!";
+"trip.navigatingTo" = "Navegando para";
+"trip.eta" = "ETA";
+"trip.distance" = "Distância";
+"trip.startNavigation" = "Iniciar Navegação";
+"trip.endTrip" = "Finalizar Viagem";
+
+// MARK: - Debug
+"debug.liveActivityTest" = "🧪 Teste de Live Activity";
+"debug.startActivity" = "Iniciar Live Activity";
+"debug.updateActivity" = "Atualizar Live Activity";
+"debug.stopActivity" = "Parar Live Activity";
+"debug.systemInfo" = "Informações do Sistema:";
