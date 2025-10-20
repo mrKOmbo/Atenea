@@ -52,7 +52,7 @@ def get_keywords_from_post(client: OpenAI, post: MediaPost) -> str:
     prompt = f"""Extract relevant keywords from the following media post:
         Post Title: {post.title}
         Post Content: {post.content}
-        Provide the keywords as a comma-separated list."""
+        Provide the keywords as a comma-separated list, without any additional text, periods, or formatting."""
     response = client.chat.completions.create(
         model=AI_MODEL,
         messages=[
