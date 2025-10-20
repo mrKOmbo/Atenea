@@ -42,6 +42,7 @@ SUBREDDITS_TO_SCRAPE = [
 ]
 
 MASTODON_ACCOUNTS_TO_SCRAPE = [
+    "@m_de_milo@mastodon.social",
     "@FIFAWorldCup@sportsbots.xyz",
     "@FOXSoccer@sportsbots.xyz"
 ]
