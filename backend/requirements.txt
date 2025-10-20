@@ -4,6 +4,7 @@ feedparser
 lxml[html_clean]
 newspaper3k
 openai
+praw
 psycopg2-binary
 python-dotenv
 sqlalchemy

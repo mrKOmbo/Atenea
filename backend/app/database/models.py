@@ -32,6 +32,33 @@ class NewsArticle(Base):
     keywords: Mapped[str] = mapped_column(nullable=False)
     processed: Mapped[bool] = mapped_column(nullable=False, default=False)
 
+class RedditPost(Base):
+    """
+    Table to store Reddit posts.
+    1. id: Primary key (integer)
+    2. reddit_id: Reddit post ID (string)
+    3. title: Title of the Reddit post (string)
+    4. author: Author of the Reddit post (string)
+    5. content: Full content of the Reddit post (text)
+    6. url: URL of the Reddit post (string)
+    7. subreddit: Subreddit where the post was made (string)
+    8. date: Date when the post was created (datetime)
+    9. upvotes: Number of upvotes on the post (integer)
+    10. processed: Boolean indicating if the post has been processed by AI (default: False)
+    """
+    __tablename__ = "reddit_posts"
+
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    reddit_id: Mapped[str] = mapped_column(nullable=False, unique=True)
+    title: Mapped[str] = mapped_column(nullable=False)
+    author: Mapped[str] = mapped_column(nullable=False)
+    content: Mapped[str] = mapped_column(nullable=False)
+    url: Mapped[str] = mapped_column(nullable=False, unique=True)
+    subreddit: Mapped[str] = mapped_column(nullable=False)
+    date: Mapped[datetime] = mapped_column(nullable=False)
+    upvotes: Mapped[int] = mapped_column(nullable=False, default=0)
+    processed: Mapped[bool] = mapped_column(nullable=False, default=False)
+
 class MediaPost(Base):
     """
     Table to store generic media posts, this is a unified table for various media types.

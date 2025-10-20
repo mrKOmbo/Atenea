@@ -3,6 +3,7 @@
 import feedparser
 import logging
 import newspaper
+import praw
 import time
 from datetime import datetime
 
@@ -10,7 +11,7 @@ from datetime import datetime
 from sqlalchemy import Engine
 from sqlalchemy.orm import Session
 
-from ..database.models import NewsArticle
+from ..database.models import NewsArticle, RedditPost
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -31,6 +32,13 @@ NEWS_RSS_FEEDS = [
     "https://www.newsnow.co.uk/h/Sport/Football/International/FIFA+World+Cup",
     "https://www.wizardrss.com/soccer-feeds.html"
 ]
+
+SUBREDDITS_TO_SCRAPE = [
+    "soccer",
+    "football",
+    "worldcup"
+]
+
 
 def scrape_news_from_feed(engine: Engine, feed_url: str) -> None:
     """
@@ -97,3 +105,55 @@ def scrape_all_news(engine: Engine) -> None:
     for feed_url in NEWS_RSS_FEEDS:
         logger.info(f"Scraping news from feed: {feed_url}")
         scrape_news_from_feed(engine, feed_url)
+
+def log_into_reddit(client_id: str, client_secret: str, user_agent: str) -> praw.Reddit:
+    """
+    Log in to Reddit using PRAW and return the Reddit instance.
+    """
+    reddit = praw.Reddit(
+        client_id=client_id,
+        client_secret=client_secret,
+        user_agent=user_agent
+    )
+    return reddit
+
+def scrape_news_from_reddit(engine: Engine, reddit_client: praw.Reddit, subreddit_name: str, limit: int = 10) -> None:
+    """
+    Scrape news articles from a given subreddit and store them in the database if they are not already present.
+    Each article is represented as a dictionary with keys: title, author, publish_date, content, url, image, keywords.
+    """
+    subreddit = reddit_client.subreddit(subreddit_name)
+
+    with Session(engine) as session:
+
+        for submission in subreddit.top(time_filter="week", limit=limit):
+            if session.query(RedditPost).filter(RedditPost.reddit_id == submission.id).first() is not None:
+                logger.debug(f"Reddit post already in database: {submission.id}")
+                continue
+
+            publish_date = datetime.fromtimestamp(submission.created_utc)
+
+            new_post = RedditPost(
+                reddit_id=submission.id,
+                title=submission.title,
+                author=f"u/{submission.author.name}",
+                content=submission.selftext,
+                url=submission.permalink,
+                subreddit=subreddit_name,
+                date=publish_date,
+                upvotes=submission.score,
+                processed=False
+            )
+            session.add(new_post)
+            logger.info(f"Added new Reddit post to database: {submission.id}")
+
+        session.commit()
+        logger.info("All new Reddit posts have been committed to the database.")
+
+def scrape_all_reddit_news(engine: Engine, reddit_client: praw.Reddit) -> None:
+    """
+    Scrape news articles from all predefined subreddits and store them in the database.
+    """
+    for subreddit_name in SUBREDDITS_TO_SCRAPE:
+        logger.info(f"Scraping news from subreddit: {subreddit_name}")
+        scrape_news_from_reddit(engine, reddit_client, subreddit_name)

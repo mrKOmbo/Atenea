@@ -43,3 +43,29 @@ def is_post_related(client: OpenAI, post: MediaPost, keywords: list[str]) -> boo
     logger.debug(f"OpenAI response for post title '{post.title}': {content}")
 
     return content == "yes"
+
+def get_keywords_from_post(client: OpenAI, post: MediaPost) -> str:
+    """
+    Use the OpenAI API to extract keywords from a media post.
+    Returns a comma-separated string of keywords.
+    """
+    prompt = f"""Extract relevant keywords from the following media post:
+        Post Title: {post.title}
+        Post Content: {post.content}
+        Provide the keywords as a comma-separated list."""
+    response = client.chat.completions.create(
+        model=AI_MODEL,
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant that extracts keywords from social media posts."},
+            {"role": "user", "content": prompt}
+        ],
+        max_tokens=60
+    )
+    content = response.choices[0].message.content
+    if content is None:
+        logger.warning(f"OpenAI returned no content for keyword extraction from post '{post.title}'")
+        return ""
+
+    logging.debug(f"OpenAI keywords for post title '{post.title}': {content}")
+
+    return content.strip()
