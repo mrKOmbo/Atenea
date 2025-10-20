@@ -1,0 +1,294 @@
+/*
+  Localizable.strings
+  Atenea
+  Japanese Localization
+*/
+
+// MARK: - Main Tabs
+"tab.map" = "マップ";
+"tab.community" = "コミュニティ";
+"tab.album" = "アルバム";
+
+// MARK: - Common Actions
+"action.start" = "開始";
+"action.next" = "次へ";
+"action.skip" = "スキップ";
+"action.cancel" = "キャンセル";
+"action.save" = "保存";
+"action.delete" = "削除";
+"action.update" = "更新";
+"action.retry" = "再試行";
+"action.confirm" = "確認";
+"action.accept" = "承認";
+"action.openSettings" = "設定を開く";
+
+// MARK: - Status Messages
+"status.loading" = "読み込み中...";
+"status.loadingPosts" = "投稿を読み込み中...";
+"status.error" = "エラー";
+"status.errorLoadingPosts" = "投稿の読み込みに失敗しました";
+"status.noPostsAvailable" = "利用可能な投稿がありません";
+"status.confirmed" = "確認済み";
+"status.pending" = "保留中";
+"status.cancelled" = "キャンセル済み";
+"status.waiting" = "待機中";
+
+// MARK: - Onboarding
+"onboarding.title" = "Atenea";
+"onboarding.subtitle" = "2026ワールドカップのお供";
+"onboarding.venues" = "16スタジアム";
+"onboarding.scanner" = "ARスキャナー";
+"onboarding.album" = "アルバム";
+
+// MARK: - Tutorial
+"tutorial.welcome" = "Ateneaへようこそ";
+"tutorial.welcomeDesc" = "2026年ワールドカップのスタジアムを発見しましょう。マーカーをタップして詳細を確認し、ステッカーを集めましょう。";
+"tutorial.menu" = "機能メニュー";
+"tutorial.menuDesc" = "ここでレコメンデーション、ARスキャナー、カレンダー、その他の機能があります。";
+"tutorial.search" = "近くの場所を探す";
+"tutorial.searchDesc" = "レストランやホテルなどのカテゴリーを押して、近くの場所を見つけましょう。";
+"tutorial.community" = "コミュニティタブ";
+"tutorial.communityDesc" = "コミュニティが共有するワールドカップに関するInstagramの投稿を見つけましょう。";
+"tutorial.album" = "ステッカーアルバム";
+"tutorial.albumDesc" = "すべてのワールドカップスタジアムとチームのステッカーを集めましょう。場所を訪れてロックを解除しましょう。";
+
+// MARK: - Community
+"community.filter.all" = "すべて";
+"community.filter.worldCup" = "ワールドカップ2026";
+"community.filter.trending" = "トレンド";
+"community.filter.creator" = "クリエイター";
+
+// MARK: - Album
+"album.stickers" = "ステッカー";
+"album.of" = "/";
+"album.completed" = "完了";
+"album.new" = "新着";
+
+// MARK: - Menu
+"menu.main" = "メインメニュー";
+"menu.navigation" = "ナビゲーション";
+"menu.venueMap" = "スタジアムマップ";
+"menu.myLocation" = "現在地";
+"menu.worldCup" = "ワールドカップ";
+"menu.calendar" = "カレンダー";
+"menu.matches" = "試合";
+"menu.favorites" = "お気に入り";
+"menu.transport" = "交通";
+"menu.transportModes" = "交通手段";
+"menu.routes" = "ルート";
+"menu.others" = "その他";
+"menu.ar" = "拡張現実";
+"menu.scanPlayers" = "選手をスキャン";
+"menu.information" = "情報";
+"menu.settings" = "設定";
+"menu.version" = "バージョン 1.0.0";
+"menu.cameraPermission" = "カメラ許可が必要です";
+"menu.cameraPermissionDesc" = "拡張現実を使用するには、設定でカメラアクセスを有効にする必要があります。";
+
+// MARK: - Profile
+"profile.menu" = "メニュー";
+"profile.mapType" = "マップタイプ";
+"profile.language" = "言語";
+"profile.claudeAPI" = "Claude API";
+"profile.configured" = "設定済み";
+"profile.notConfigured" = "未設定";
+"profile.scheduleMatch" = "試合をスケジュール";
+"profile.selectVenue" = "スタジアムを選択";
+"profile.selectVenueDesc" = "試合が行われるスタジアムを選択してください";
+"profile.seats" = "座席";
+"profile.dateTime" = "日時";
+"profile.status" = "ステータス";
+"profile.confirmReservation" = "予約を確認";
+"profile.reservationConfirmed" = "予約が確認されました！";
+"profile.yourMatchAt" = "あなたの試合：";
+"profile.seatsPlaceholder" = "例：セクションA、列12...";
+"profile.capacity" = "収容人数";
+"profile.venue" = "スタジアム";
+"profile.completeData" = "試合を予約するためにデータを入力してください";
+
+// MARK: - Venues
+"venue.azteca" = "アステカスタジアム";
+"venue.bbva" = "BBVAスタジアム";
+"venue.akron" = "アクロンスタジアム";
+"venue.sofi" = "ソフィスタジアム";
+"venue.metlife" = "メットライフスタジアム";
+"venue.att" = "AT&Tスタジアム";
+"venue.arrowhead" = "アローヘッドスタジアム";
+"venue.nrg" = "NRGスタジアム";
+"venue.hardrock" = "ハードロックスタジアム";
+"venue.mercedes" = "メルセデス・ベンツスタジアム";
+"venue.lumen" = "ルーメンフィールド";
+"venue.levis" = "リーバイススタジアム";
+"venue.gillette" = "ジレットスタジアム";
+"venue.lincoln" = "リンカーンファイナンシャルフィールド";
+"venue.bcplace" = "BCプレイス";
+"venue.bmo" = "BMOフィールド";
+
+// MARK: - FIFA World Cup
+"worldcup.title" = "FIFAワールドカップ2026™";
+
+// MARK: - Map & Search
+"map.search" = "検索";
+"map.restaurant" = "レストラン";
+"map.coffee" = "カフェ";
+"map.bar" = "バー";
+"map.hotel" = "ホテル";
+"map.museum" = "美術館";
+"map.gym" = "ジム";
+"map.park" = "公園";
+"map.clear" = "クリア";
+"map.recommendations" = "おすすめ";
+"map.suggestions" = "提案";
+"map.dinner" = "ディナー";
+"map.bars" = "バー";
+"map.hotels" = "ホテル";
+"map.museums" = "美術館";
+"map.gyms" = "ジム";
+"map.parks" = "公園";
+"map.findTransport" = "交通機関を探す";
+"map.matchScheduled" = "試合がスケジュールされました";
+"map.yourLocation" = "現在地";
+"map.myReservations" = "マイ予約";
+"map.activeReservations" = "%d件のアクティブな予約";
+"map.noReservations" = "予約がありません";
+"map.exploreVenues" = "スタジアムを探索して、2026年ワールドカップの試合の席を予約しましょう";
+
+// MARK: - Navigation
+"navigation.startNavigation" = "ナビゲーション開始";
+"navigation.endNavigation" = "ナビゲーション終了";
+"navigation.arriving" = "到着中";
+"navigation.inProgress" = "進行中";
+
+// MARK: - Transport
+"transport.walking" = "徒歩";
+"transport.driving" = "車";
+"transport.transit" = "公共交通機関";
+"transport.cycling" = "自転車";
+
+// MARK: - AR Scanner
+"ar.scanPlayer" = "選手をスキャン";
+"ar.scanning" = "スキャン中...";
+"ar.pointAtPlayer" = "選手カードまたはポスターに向けてください";
+"ar.playerDetected" = "選手が検出されました！";
+"ar.scanPoster" = "ポスターをスキャン";
+"ar.discover" = "各スタジアムの情報を発見";
+"ar.startScan" = "スキャン開始";
+"ar.scanPlayerCard" = "選手カードをスキャン";
+"ar.pointCamera" = "選手の画像にカメラを向けてください";
+"ar.arReady" = "AR準備完了";
+"ar.playerFound" = "選手が見つかりました！";
+"ar.openingAlbum" = "ページ%dでアルバムを開いています...";
+"ar.getCloser" = "スタジアムに近づいてください";
+"ar.mustBeWithin" = "100m以内にいる必要があります";
+"ar.noVenuesNearby" = "近くにスタジアムがありません";
+"ar.visitVenue" = "2026年ワールドカップのスタジアムを訪れてください";
+"ar.collectStickers" = "ARでステッカーを集める";
+"ar.stickersCollected" = "ステッカーが集められました！";
+"ar.stickerAdded" = "+1ステッカー";
+"ar.initializing" = "AR初期化中...";
+"ar.preparingDetection" = "ポスター検出を準備中";
+"ar.worldCupAR" = "ワールドカップ2026 AR";
+"ar.worldCupVenue" = "🏟️ ワールドカップ2026スタジアム";
+"ar.addToAlbum" = "アルバムに追加";
+"ar.collectThisVenue" = "このスタジアムを集める";
+"ar.viewOnMap" = "マップで表示";
+"ar.viewAlbum" = "%@のアルバムを表示";
+"ar.pointAtPoster" = "ワールドカップ2026のポスターに向けてください";
+"ar.keepPosterCentered" = "画面の中央にポスターを保持してください";
+"ar.openInAppleMaps" = "Apple Mapsで開く";
+
+// MARK: - Settings
+"settings.title" = "設定";
+"settings.apiKey" = "APIキー";
+"settings.notifications" = "通知";
+"settings.privacy" = "プライバシー";
+"settings.about" = "情報";
+
+// MARK: - Errors
+"error.general" = "エラーが発生しました";
+"error.network" = "ネットワークエラー";
+"error.noInternet" = "インターネット接続なし";
+"error.serverError" = "サーバーエラー";
+
+// MARK: - Time Formats
+"time.justNow" = "たった今";
+"time.minutesAgo" = "%d分前";
+"time.hoursAgo" = "%d時間前";
+"time.daysAgo" = "%d日前";
+
+// MARK: - Login
+"login.welcome" = "ようこそ";
+"login.appName" = "Atenea";
+"login.emailOrPhone" = "メールまたは電話番号";
+"login.emailPlaceholder" = "メールまたは電話番号を入力";
+"login.terms" = "アカウントを作成することにより、";
+"login.termsLink" = "利用規約";
+"login.and" = "と";
+"login.privacyLink" = "プライバシーポリシー";
+"login.continue" = "続ける";
+"login.or" = "または";
+"login.continueWithGoogle" = "Googleで続ける";
+"login.continueWithApple" = "Appleで続ける";
+"login.help" = "ヘルプ";
+"login.close" = "閉じる";
+"login.noAccount" = "アカウントをお持ちではありませんか？";
+"login.signUp" = "サインアップ";
+
+// MARK: - Registration
+"register.title" = "アカウント作成";
+"register.subtitle" = "Ateneaコミュニティに参加";
+"register.name" = "フルネーム";
+"register.namePlaceholder" = "フルネームを入力してください";
+"register.age" = "年齢";
+"register.agePlaceholder" = "年齢を入力してください";
+"register.origin" = "出身地";
+"register.originPlaceholder" = "国を選択してください";
+"register.email" = "メール";
+"register.emailPlaceholder" = "メールアドレスを入力してください";
+"register.phone" = "電話番号";
+"register.phonePlaceholder" = "電話番号を入力してください";
+"register.createAccount" = "アカウント作成";
+"register.alreadyHaveAccount" = "既にアカウントをお持ちですか？";
+"register.signIn" = "サインイン";
+
+// MARK: - Venue Details
+"venue.howToGet" = "アクセス方法";
+"venue.matches" = "試合";
+"venue.funFacts" = "豆知識";
+"venue.moreMatches" = "+%d試合";
+"venue.moreFacts" = "+%d豆知識";
+"venue.close" = "閉じる";
+"venue.capacity" = "収容人数";
+"venue.venues" = "%dスタジアム";
+
+// MARK: - Album
+"album.openingAlbum" = "アルバムを開いています";
+"album.preparingPages" = "ページを準備中...";
+"album.swipeToFlip" = "スワイプでページをめくる";
+
+// MARK: - Menu (Hamburger)
+"menu.worldCup2026" = "ワールドカップ2026";
+"menu.mainMenu" = "メインメニュー";
+"menu.venueMap" = "スタジアムマップ";
+"menu.myLocation" = "現在地";
+"menu.worldCupSection" = "ワールドカップ";
+"menu.transportSection" = "交通";
+"menu.othersSection" = "その他";
+"menu.fifaWorldCup" = "FIFAワールドカップ2026";
+"menu.cameraAccess" = "拡張現実を使用するには、設定 > Atenea > カメラでカメラアクセスを有効にする必要があります";
+"menu.countries" = "16スタジアム • 3カ国";
+
+// MARK: - Trip
+"trip.started" = "旅行開始！";
+"trip.navigatingTo" = "ナビゲート先：";
+"trip.eta" = "到着予定時刻";
+"trip.distance" = "距離";
+"trip.startNavigation" = "ナビゲーション開始";
+"trip.endTrip" = "旅行終了";
+
+// MARK: - Debug
+"debug.liveActivityTest" = "🧪 ライブアクティビティテスト";
+"debug.startActivity" = "ライブアクティビティ開始";
+"debug.updateActivity" = "ライブアクティビティ更新";
+"debug.stopActivity" = "ライブアクティビティ停止";
+"debug.systemInfo" = "システム情報:";

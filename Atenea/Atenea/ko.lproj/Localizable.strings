@@ -1,0 +1,294 @@
+/*
+  Localizable.strings
+  Atenea
+  Korean Localization
+*/
+
+// MARK: - Main Tabs
+"tab.map" = "지도";
+"tab.community" = "커뮤니티";
+"tab.album" = "앨범";
+
+// MARK: - Common Actions
+"action.start" = "시작";
+"action.next" = "다음";
+"action.skip" = "건너뛰기";
+"action.cancel" = "취소";
+"action.save" = "저장";
+"action.delete" = "삭제";
+"action.update" = "업데이트";
+"action.retry" = "다시 시도";
+"action.confirm" = "확인";
+"action.accept" = "수락";
+"action.openSettings" = "설정 열기";
+
+// MARK: - Status Messages
+"status.loading" = "로딩 중...";
+"status.loadingPosts" = "게시물 로딩 중...";
+"status.error" = "오류";
+"status.errorLoadingPosts" = "게시물 로딩 오류";
+"status.noPostsAvailable" = "사용 가능한 게시물이 없습니다";
+"status.confirmed" = "확인됨";
+"status.pending" = "대기 중";
+"status.cancelled" = "취소됨";
+"status.waiting" = "대기 중";
+
+// MARK: - Onboarding
+"onboarding.title" = "Atenea";
+"onboarding.subtitle" = "2026 월드컵의 동반자";
+"onboarding.venues" = "16개 경기장";
+"onboarding.scanner" = "AR 스캐너";
+"onboarding.album" = "앨범";
+
+// MARK: - Tutorial
+"tutorial.welcome" = "Atenea에 오신 것을 환영합니다";
+"tutorial.welcomeDesc" = "2026 월드컵 경기장을 발견하세요. 마커를 탭하여 세부 정보를 확인하고 스티커를 수집하세요.";
+"tutorial.menu" = "기능 메뉴";
+"tutorial.menuDesc" = "여기서 추천, AR 스캐너, 캘린더 및 더 많은 기능을 찾을 수 있습니다.";
+"tutorial.search" = "근처 장소 찾기";
+"tutorial.searchDesc" = "레스토랑이나 호텔 같은 카테고리를 눌러 근처 장소를 찾으세요.";
+"tutorial.community" = "커뮤니티 탭";
+"tutorial.communityDesc" = "커뮤니티가 공유한 월드컵에 대한 Instagram 게시물을 발견하세요.";
+"tutorial.album" = "스티커 앨범";
+"tutorial.albumDesc" = "모든 월드컵 경기장과 팀의 스티커를 수집하세요. 장소를 방문하여 잠금 해제하세요.";
+
+// MARK: - Community
+"community.filter.all" = "전체";
+"community.filter.worldCup" = "월드컵 2026";
+"community.filter.trending" = "인기";
+"community.filter.creator" = "크리에이터";
+
+// MARK: - Album
+"album.stickers" = "스티커";
+"album.of" = "/";
+"album.completed" = "완료";
+"album.new" = "새로운";
+
+// MARK: - Menu
+"menu.main" = "메인 메뉴";
+"menu.navigation" = "내비게이션";
+"menu.venueMap" = "경기장 지도";
+"menu.myLocation" = "내 위치";
+"menu.worldCup" = "월드컵";
+"menu.calendar" = "캘린더";
+"menu.matches" = "경기";
+"menu.favorites" = "즐겨찾기";
+"menu.transport" = "교통";
+"menu.transportModes" = "교통 수단";
+"menu.routes" = "경로";
+"menu.others" = "기타";
+"menu.ar" = "증강 현실";
+"menu.scanPlayers" = "선수 스캔";
+"menu.information" = "정보";
+"menu.settings" = "설정";
+"menu.version" = "버전 1.0.0";
+"menu.cameraPermission" = "카메라 권한 필요";
+"menu.cameraPermissionDesc" = "증강 현실을 사용하려면 설정에서 카메라 액세스를 활성화해야 합니다.";
+
+// MARK: - Profile
+"profile.menu" = "메뉴";
+"profile.mapType" = "지도 유형";
+"profile.language" = "언어";
+"profile.claudeAPI" = "Claude API";
+"profile.configured" = "구성됨";
+"profile.notConfigured" = "구성되지 않음";
+"profile.scheduleMatch" = "경기 예약";
+"profile.selectVenue" = "경기장 선택";
+"profile.selectVenueDesc" = "경기가 열릴 경기장을 선택하세요";
+"profile.seats" = "좌석";
+"profile.dateTime" = "날짜 및 시간";
+"profile.status" = "상태";
+"profile.confirmReservation" = "예약 확인";
+"profile.reservationConfirmed" = "예약 확인되었습니다!";
+"profile.yourMatchAt" = "귀하의 경기 장소:";
+"profile.seatsPlaceholder" = "예: 섹션 A, 열 12...";
+"profile.capacity" = "수용 인원";
+"profile.venue" = "경기장";
+"profile.completeData" = "경기를 예약하려면 데이터를 완료하세요";
+
+// MARK: - Venues
+"venue.azteca" = "아즈테카 스타디움";
+"venue.bbva" = "BBVA 스타디움";
+"venue.akron" = "아크론 스타디움";
+"venue.sofi" = "소파이 스타디움";
+"venue.metlife" = "메트라이프 스타디움";
+"venue.att" = "AT&T 스타디움";
+"venue.arrowhead" = "애로우헤드 스타디움";
+"venue.nrg" = "NRG 스타디움";
+"venue.hardrock" = "하드록 스타디움";
+"venue.mercedes" = "메르세데스-벤츠 스타디움";
+"venue.lumen" = "루멘 필드";
+"venue.levis" = "리바이스 스타디움";
+"venue.gillette" = "질레트 스타디움";
+"venue.lincoln" = "링컨 파이낸셜 필드";
+"venue.bcplace" = "BC 플레이스";
+"venue.bmo" = "BMO 필드";
+
+// MARK: - FIFA World Cup
+"worldcup.title" = "FIFA 월드컵 2026™";
+
+// MARK: - Map & Search
+"map.search" = "검색";
+"map.restaurant" = "레스토랑";
+"map.coffee" = "카페";
+"map.bar" = "바";
+"map.hotel" = "호텔";
+"map.museum" = "박물관";
+"map.gym" = "체육관";
+"map.park" = "공원";
+"map.clear" = "지우기";
+"map.recommendations" = "추천";
+"map.suggestions" = "제안";
+"map.dinner" = "저녁 식사";
+"map.bars" = "바";
+"map.hotels" = "호텔";
+"map.museums" = "박물관";
+"map.gyms" = "체육관";
+"map.parks" = "공원";
+"map.findTransport" = "교통편 찾기";
+"map.matchScheduled" = "경기가 예약되었습니다";
+"map.yourLocation" = "내 위치";
+"map.myReservations" = "내 예약";
+"map.activeReservations" = "%d개의 활성 예약";
+"map.noReservations" = "예약이 없습니다";
+"map.exploreVenues" = "경기장을 탐색하고 2026 월드컵 경기를 위한 자리를 예약하세요";
+
+// MARK: - Navigation
+"navigation.startNavigation" = "내비게이션 시작";
+"navigation.endNavigation" = "내비게이션 종료";
+"navigation.arriving" = "도착 중";
+"navigation.inProgress" = "진행 중";
+
+// MARK: - Transport
+"transport.walking" = "도보";
+"transport.driving" = "운전";
+"transport.transit" = "대중교통";
+"transport.cycling" = "자전거";
+
+// MARK: - AR Scanner
+"ar.scanPlayer" = "선수 스캔";
+"ar.scanning" = "스캔 중...";
+"ar.pointAtPlayer" = "선수 카드나 포스터를 가리키세요";
+"ar.playerDetected" = "선수 감지됨!";
+"ar.scanPoster" = "포스터 스캔";
+"ar.discover" = "각 경기장에 대한 정보 발견";
+"ar.startScan" = "스캔 시작";
+"ar.scanPlayerCard" = "선수 카드 스캔";
+"ar.pointCamera" = "선수 이미지에 카메라를 가리키세요";
+"ar.arReady" = "AR 준비됨";
+"ar.playerFound" = "선수 발견!";
+"ar.openingAlbum" = "페이지 %d에서 앨범 열기...";
+"ar.getCloser" = "경기장에 더 가까이 가세요";
+"ar.mustBeWithin" = "100m 이내에 있어야 합니다";
+"ar.noVenuesNearby" = "근처에 경기장이 없습니다";
+"ar.visitVenue" = "2026 월드컵 경기장을 방문하세요";
+"ar.collectStickers" = "AR로 스티커 수집";
+"ar.stickersCollected" = "스티커 수집됨!";
+"ar.stickerAdded" = "+1 스티커";
+"ar.initializing" = "AR 초기화 중...";
+"ar.preparingDetection" = "포스터 감지 준비 중";
+"ar.worldCupAR" = "월드컵 2026 AR";
+"ar.worldCupVenue" = "🏟️ 월드컵 2026 경기장";
+"ar.addToAlbum" = "앨범에 추가";
+"ar.collectThisVenue" = "이 경기장 수집";
+"ar.viewOnMap" = "지도에서 보기";
+"ar.viewAlbum" = "%@ 앨범 보기";
+"ar.pointAtPoster" = "월드컵 2026 포스터를 가리키세요";
+"ar.keepPosterCentered" = "화면 중앙에 포스터 유지";
+"ar.openInAppleMaps" = "Apple Maps에서 열기";
+
+// MARK: - Settings
+"settings.title" = "설정";
+"settings.apiKey" = "API 키";
+"settings.notifications" = "알림";
+"settings.privacy" = "개인정보";
+"settings.about" = "정보";
+
+// MARK: - Errors
+"error.general" = "오류가 발생했습니다";
+"error.network" = "네트워크 오류";
+"error.noInternet" = "인터넷 연결 없음";
+"error.serverError" = "서버 오류";
+
+// MARK: - Time Formats
+"time.justNow" = "방금 전";
+"time.minutesAgo" = "%d분 전";
+"time.hoursAgo" = "%d시간 전";
+"time.daysAgo" = "%d일 전";
+
+// MARK: - Login
+"login.welcome" = "환영합니다";
+"login.appName" = "Atenea";
+"login.emailOrPhone" = "이메일 또는 전화번호";
+"login.emailPlaceholder" = "이메일 또는 전화번호를 입력하세요";
+"login.terms" = "계정을 만들면";
+"login.termsLink" = "서비스 약관";
+"login.and" = "및";
+"login.privacyLink" = "개인정보 보호정책";
+"login.continue" = "계속";
+"login.or" = "또는";
+"login.continueWithGoogle" = "Google로 계속";
+"login.continueWithApple" = "Apple로 계속";
+"login.help" = "도움말";
+"login.close" = "닫기";
+"login.noAccount" = "계정이 없으신가요?";
+"login.signUp" = "가입하기";
+
+// MARK: - Registration
+"register.title" = "계정 만들기";
+"register.subtitle" = "Atenea 커뮤니티에 가입하세요";
+"register.name" = "전체 이름";
+"register.namePlaceholder" = "전체 이름을 입력하세요";
+"register.age" = "나이";
+"register.agePlaceholder" = "나이를 입력하세요";
+"register.origin" = "출신지";
+"register.originPlaceholder" = "국가를 선택하세요";
+"register.email" = "이메일";
+"register.emailPlaceholder" = "이메일을 입력하세요";
+"register.phone" = "전화번호";
+"register.phonePlaceholder" = "전화번호를 입력하세요";
+"register.createAccount" = "계정 만들기";
+"register.alreadyHaveAccount" = "이미 계정이 있으신가요?";
+"register.signIn" = "로그인";
+
+// MARK: - Venue Details
+"venue.howToGet" = "가는 방법";
+"venue.matches" = "경기";
+"venue.funFacts" = "재미있는 사실";
+"venue.moreMatches" = "+%d개 더 많은 경기";
+"venue.moreFacts" = "+%d개 더 많은 사실";
+"venue.close" = "닫기";
+"venue.capacity" = "수용 인원";
+"venue.venues" = "%d개 경기장";
+
+// MARK: - Album
+"album.openingAlbum" = "앨범 열기";
+"album.preparingPages" = "페이지 준비 중...";
+"album.swipeToFlip" = "스와이프하여 페이지 넘기기";
+
+// MARK: - Menu (Hamburger)
+"menu.worldCup2026" = "월드컵 2026";
+"menu.mainMenu" = "메인 메뉴";
+"menu.venueMap" = "경기장 지도";
+"menu.myLocation" = "내 위치";
+"menu.worldCupSection" = "월드컵";
+"menu.transportSection" = "교통";
+"menu.othersSection" = "기타";
+"menu.fifaWorldCup" = "FIFA 월드컵 2026";
+"menu.cameraAccess" = "증강 현실을 사용하려면 설정 > Atenea > 카메라에서 카메라 액세스를 활성화해야 합니다";
+"menu.countries" = "16개 경기장 • 3개국";
+
+// MARK: - Trip
+"trip.started" = "여행 시작!";
+"trip.navigatingTo" = "다음으로 이동 중:";
+"trip.eta" = "도착 예정 시간";
+"trip.distance" = "거리";
+"trip.startNavigation" = "내비게이션 시작";
+"trip.endTrip" = "여행 종료";
+
+// MARK: - Debug
+"debug.liveActivityTest" = "🧪 라이브 액티비티 테스트";
+"debug.startActivity" = "라이브 액티비티 시작";
+"debug.updateActivity" = "라이브 액티비티 업데이트";
+"debug.stopActivity" = "라이브 액티비티 중지";
+"debug.systemInfo" = "시스템 정보:";
