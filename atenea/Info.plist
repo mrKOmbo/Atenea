@@ -6,6 +6,30 @@
 	<array>
 		<string>_p2p._tcp</string>
 		<string>_p2p._udp</string>
+	</array>	<key>NSNearbyInteractionUsageDescription</key>
+	<string>This app uses Nearby Interaction to find other devices.</string>
+	<key>NSNearbyInteractionAllowOnceUsageDescription</key>
+	<string>This app uses Nearby Interaction to find other devices.</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>nearby-interaction</string>
+	</array>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>Bonjour services</key>
+	<array>
+		<string>_p2p._tcp</string>
 	</array>
 </dict>
 </plist>
