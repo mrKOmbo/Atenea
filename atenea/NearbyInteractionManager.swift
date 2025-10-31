@@ -23,6 +23,12 @@ struct SOSMessage: Codable {
     let tokenPathData: [Data] // A list of *archived* NIDiscoveryTokens
 }
 
+// List possible messages
+enum MPCMessage: Codable {
+    case sos(SOSMessage)
+    case ack(UUID) // Acknowledges a message by its ID
+}
+
 // Helper functions to handle token archiving
 func archiveToken(_ token: NIDiscoveryToken) -> Data? {
     do {
@@ -70,6 +76,11 @@ class NearbyInteractionManager: NSObject, ObservableObject {
     private var processedMessageIDs: Set<UUID> = []
     private var currentSOSMessage: SOSMessage?
 
+    
+    // --- State for ACK System ---
+    private var handoffConfirmed: Bool = false
+    private var connectedPeer: MCPeerID?
+    
     init(role: AppRole) {
         self.myRole = role
         self.myPeerID = MCPeerID(displayName: UIDevice.current.name)
@@ -150,12 +161,31 @@ class NearbyInteractionManager: NSObject, ObservableObject {
     // Send our current SOSMessage to a peer
     private func sendSOSMessage(to peer: MCPeerID) {
         guard let mpcSession = mpcSession, let message = currentSOSMessage else { return }
+            
+        // Wrap the SOSMessage in our new MPCMessage enum
+        let wrapperMessage = MPCMessage.sos(message)
+            
         do {
-            let data = try JSONEncoder().encode(message)
+            let data = try JSONEncoder().encode(wrapperMessage) // Encode the wrapper
             try mpcSession.send(data, toPeers: [peer], with: .reliable)
             print("Successfully sent SOS message to \(peer.displayName)")
         } catch {
             print("Error sending SOS message: \(error.localizedDescription)")
+        }
+    }
+    
+    // Send the ACK message
+    private func sendAck(to peer: MCPeerID, for messageID: UUID) {
+        guard let mpcSession = mpcSession else { return }
+            
+        let ackMessage = MPCMessage.ack(messageID)
+            
+        do {
+            let data = try JSONEncoder().encode(ackMessage)
+            try mpcSession.send(data, toPeers: [peer], with: .reliable)
+            print("Successfully sent ACK for \(messageID) to \(peer.displayName)")
+        } catch {
+            print("Error sending ACK: \(error.localizedDescription)")
         }
     }
     
@@ -276,91 +306,117 @@ extension NearbyInteractionManager: MCSessionDelegate {
         switch state {
         case .connected:
             print("Connected to \(peerID.displayName)")
-            // The advertiser (Client/Forwarder) sends the message to the browser (Staff/Forwarder)
+            self.connectedPeer = peerID // Store the connected peer
+            
+            // The advertiser (Client/Forwarder) sends the message
             if advertiser != nil {
+                self.handoffConfirmed = false
                 sendSOSMessage(to: peerID)
             }
-            
+                
         case .connecting:
             print("Connecting to \(peerID.displayName)...")
-            
+                
         case .notConnected:
             print("Disconnected from \(peerID.displayName)")
-            
-            // If we were a Client/Forwarder who just passed the potato,
-            // we can stop advertising.
+            self.connectedPeer = nil // Clear the connected peer
+                
+            // If we were an advertiser (Client/Forwarder)...
             if advertiser != nil {
-                advertiser?.stopAdvertisingPeer()
-                advertiser = nil
-                
-                // If we are a client, we're done.
-                // If we are a forwarder, go back to browsing.
-                if myRole == .forwarder {
-                    startBrowsing()
-                } else if myRole == .client {
-                    DispatchQueue.main.async { self.connectionStatus = "SOS Sent!" }
+                if handoffConfirmed {
+                    // SUCCESS: The handoff was ACK'd
+                    print("Handoff confirmed. Stopping advertising.")
+                    advertiser?.stopAdvertisingPeer()
+                    advertiser = nil
+                        
+                    if myRole == .forwarder {
+                        startBrowsing() // Go back to browsing
+                    } else if myRole == .client {
+                        DispatchQueue.main.async { self.connectionStatus = "SOS Sent!" }
+                    }
+                } else {
+                    // FAILURE: We disconnected before getting an ACK
+                    print("Handoff FAILED. Restarting advertising...")
+                    DispatchQueue.main.async { self.connectionStatus = "Handoff failed, retrying..." }
                 }
             }
-            
-        @unknown default:
-            break
-        }
-    }
-    
-    func session(_ session: MCSession, didReceive data: Data, fromPeer peerID: MCPeerID) {
-        // This is called on the Browser (Staff or Forwarder)
-        do {
-            let message = try JSONDecoder().decode(SOSMessage.self, from: data)
-            
-            // --- Loop Prevention ---
-            if processedMessageIDs.contains(message.messageID) {
-                print("Received duplicate SOS message. Dropping.")
-                return
+                
+            @unknown default:
+                break
             }
-            processedMessageIDs.insert(message.messageID)
-            
-            print("Received new SOS message with \(message.tokenPathData.count) hops.")
-            print("This being \(message.tokenPathData)")
-            
-            if myRole == .staff {
-                // --- I AM STAFF ---
-                print("I am staff, will start searching")
+        }
+        
+        func session(_ session: MCSession, didReceive data: Data, fromPeer peerID: MCPeerID) {
+            // This is called on the Browser (Staff or Forwarder)
+            do {
+                // --- NEW: Decode the wrapper message ---
+                let wrapperMessage = try JSONDecoder().decode(MPCMessage.self, from: data)
                 
-                // 1. This is the end of the line. Store the path.
-                self.tokenPath = message.tokenPathData.compactMap { unarchiveToken(from: $0) }
-                
-                // 2. Stop browsing and disconnect
-                browser?.stopBrowsingForPeers()
-                session.disconnect()
-                
-                // 3. Start UWB Navigation
-                DispatchQueue.main.async {
-                    self.startUWBNavigation()
+                switch wrapperMessage {
+                // --- Case 1: We received an SOS ---
+                case .sos(let message):
+                    print("Received new SOS message with \(message.tokenPathData.count) hops.")
+                    
+                    // --- Loop Prevention ---
+                    if processedMessageIDs.contains(message.messageID) {
+                        print("Received duplicate SOS message. Dropping.")
+                        // Even if duplicate, ACK it so the sender stops trying
+                        sendAck(to: peerID, for: message.messageID)
+                        return
+                    }
+                    
+                    // --- NEW: Send ACK *before* processing ---
+                    sendAck(to: peerID, for: message.messageID)
+                    
+                    // Now process the message
+                    processedMessageIDs.insert(message.messageID)
+                    
+                    if myRole == .staff {
+                        // --- I AM STAFF ---
+                        self.tokenPath = message.tokenPathData.compactMap { unarchiveToken(from: $0) }
+                        browser?.stopBrowsingForPeers()
+                        
+                        // We can disconnect, we've ACK'd it
+                        session.disconnect()
+                        
+                        DispatchQueue.main.async {
+                            self.startUWBNavigation()
+                        }
+                        
+                    } else if myRole == .forwarder {
+                        // --- I AM A FORWARDER ---
+                        guard let myTokenData = archiveToken(myToken!) else { return }
+                        
+                        var newPath = message.tokenPathData
+                        newPath.append(myTokenData)
+                        self.currentSOSMessage = SOSMessage(messageID: message.messageID, tokenPathData: newPath)
+                        
+                        // Disconnect from the previous advertiser (we've ACK'd)
+                        session.disconnect()
+                        
+                        // Stop browsing and start advertising (pass the hot potato)
+                        browser?.stopBrowsingForPeers()
+                        startAdvertising()
+                    }
+                    
+                // --- Case 2: We received an ACK ---
+                case .ack(let messageID):
+                    // This is being received by the Advertiser (Client/Forwarder)
+                    if messageID == self.currentSOSMessage?.messageID {
+                        print("Received ACK for our message. Handoff confirmed.")
+                        self.handoffConfirmed = true
+                        
+                        // NEW: We (the sender) now disconnect, knowing it was received.
+                        session.disconnect()
+                    }
                 }
                 
-            } else if myRole == .forwarder {
-                print("I am forwarder, will start forwarding")
-                
-                // --- I AM A FORWARDER ---
-                guard let myTokenData = archiveToken(myToken!) else { return }
-                
-                // 1. Add my token to the path
-                var newPath = message.tokenPathData
-                newPath.append(myTokenData)
-                self.currentSOSMessage = SOSMessage(messageID: message.messageID, tokenPathData: newPath)
-                
-                // 2. Disconnect from the previous advertiser
-                session.disconnect()
-                
-                // 3. Stop browsing and start advertising (pass the hot potato)
-                browser?.stopBrowsingForPeers()
-                startAdvertising()
+            } catch {
+                print("Error decoding MPCMessage: \(error)")
+                // If we fail to decode, we can't ACK, so the sender will
+                // eventually time out, disconnect, and try again.
             }
-            
-        } catch {
-            print("Error decoding SOS message: \(error)")
         }
-    }
     
     func session(_ session: MCSession, didReceive stream: InputStream, withName streamName: String, fromPeer peerID: MCPeerID) {}
     func session(_ session: MCSession, didStartReceivingResourceWithName resourceName: String, fromPeer peerID: MCPeerID, with progress: Progress) {}
