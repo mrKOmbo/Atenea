@@ -2,7 +2,7 @@
 //  ClientView.swift
 //  atenea
 //
-//  Created by Enrique Calderon on 30/10/25.
+//  Created by Enrique Calderon on 25/10/25.
 //
 
 import SwiftUI
@@ -17,28 +17,16 @@ struct ClientView: View {
                 .font(.largeTitle)
             
             Button(action: {
-                // 3. When SOS is tapped, start browsing
-                niManager.startBrowsing()
+                // 3. When SOS is tapped, call the NEW function
+                niManager.startSOS()
             }) {
                 Text("SOS")
-                    .font(.title)
-                    .fontWeight(.bold)
-                    .padding(40)
-                    .background(Color.red)
-                    .foregroundColor(.white)
-                    .clipShape(Circle())
             }
             
             Text(niManager.connectionStatus)
                 .font(.headline)
-            
-            if let distance = niManager.nearbyObject?.distance {
-                Text("Staff is \(String(format: "%.2f", distance))m away")
-                    .font(.subheadline)
-            }
         }
         .onAppear {
-            // 2. Start the manager when the view appears
             niManager.start()
         }
         .onDisappear {

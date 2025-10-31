@@ -11,23 +11,25 @@ struct ContentView: View {
     var body: some View {
         NavigationView {
             VStack(spacing: 40) {
-                Text("Atenea APP")
+                Text("Atenea App")
                     .font(.largeTitle)
                 
                 NavigationLink(destination: ClientView()) {
                     Text("I am a Client")
-                        .font(.title)
-                        .padding()
-                        .background(Color.blue)
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
+                        .font(.title) // ...
                 }
                 
                 NavigationLink(destination: StaffView()) {
                     Text("I am Staff")
+                        .font(.title) // ...
+                }
+                
+                // ADD THIS NEW ROLE
+                NavigationLink(destination: ForwarderView()) {
+                    Text("Act as Forwarder")
                         .font(.title)
                         .padding()
-                        .background(Color.green)
+                        .background(Color.gray)
                         .foregroundColor(.white)
                         .cornerRadius(10)
                 }

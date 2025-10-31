@@ -2,7 +2,7 @@
 //  StaffView.swift
 //  atenea
 //
-//  Created by Enrique Calderon on 30/10/25.
+//  Created by Enrique Calderon on 25/10/25.
 //
 
 import SwiftUI
@@ -16,11 +16,20 @@ struct StaffView: View {
     
     var body: some View {
         VStack {
-            Text("Staff")
-                .font(.largeTitle)
-            
-            Text(niManager.connectionStatus)
-                .font(.headline)
+            // UI to show navigation path
+            if niManager.pathCount > 0 {
+                Text("Finding Client (\(niManager.pathCount) hops)")
+                    .font(.largeTitle)
+                Text("Navigating to: \(niManager.currentTargetID)")
+                    .font(.headline)
+                    .padding(.bottom, 5)
+            } else {
+                Text("Staff")
+                    .font(.largeTitle)
+                Text(niManager.connectionStatus)
+                    .font(.headline)
+                    .padding(.bottom, 5)
+            }
             
             // 3. Pass the ARViewContainer the latest nearbyObject
             ARViewContainer(nearbyObject: niManager.nearbyObject)
@@ -36,7 +45,8 @@ struct StaffView: View {
     }
 }
 
-// This struct bridges SwiftUI to ARKit/RealityKit
+// The ARViewContainer struc
+// Its job is simple: take a 'nearbyObject' and point an arrow.
 struct ARViewContainer: UIViewRepresentable {
     
     var nearbyObject: NINearbyObject?
@@ -44,24 +54,20 @@ struct ARViewContainer: UIViewRepresentable {
     func makeUIView(context: Context) -> ARView {
         let arView = ARView(frame: .zero)
         
-        // Start a basic AR world-tracking session
         let config = ARWorldTrackingConfiguration()
         arView.session.run(config)
         
-        // Create an anchor for the camera
-        // We will attach our arrow to this
         let cameraAnchor = AnchorEntity(.camera)
+        cameraAnchor.name = "cameraAnchor"
         arView.scene.addAnchor(cameraAnchor)
         
-        // Create the arrow model (a simple box for this demo)
-        // In a real app, you'd load a .usdz arrow model
         let arrowEntity = ModelEntity(
-            mesh: .generateBox(size: [0.1, 0.1, 0.5]), // W, H, L
+            mesh: .generateBox(size: [0.1, 0.1, 0.5]),
             materials: [SimpleMaterial(color: .cyan, isMetallic: false)]
         )
-        // Give it a name so we can find it later
         arrowEntity.name = "arrow"
-        arrowEntity.position = [0, 0, -1.0] // Place 1m in front
+        arrowEntity.position = [0, 0, -1.0]
+        arrowEntity.isEnabled = false // Start hidden
         
         cameraAnchor.addChild(arrowEntity)
         
@@ -69,50 +75,49 @@ struct ARViewContainer: UIViewRepresentable {
     }
     
     func updateUIView(_ arView: ARView, context: Context) {
-        // This function is called every time 'nearbyObject' changes
-        
-        // Find our arrow in the scene
         guard let cameraAnchor = arView.scene.anchors.first(where: { $0.name == "cameraAnchor" }),
               let arrowEntity = cameraAnchor.findEntity(named: "arrow") else {
+            print("AR error: Could not find anchor or arrow entity.")
             return
         }
         
         if let object = nearbyObject {
-            // We have a valid object!
-            
-            guard let niDirection = object.direction else {
-                arrowEntity.isEnabled = false
-                return 
-            }
-            
-            // Make arrow visible
             arrowEntity.isEnabled = true
             
-            // The NI direction is relative to the *device*.
-            // We must transform it into ARKit's *world space*.
-            guard let cameraTransform = arView.session.currentFrame?.camera.transform else { return }
+            guard let niDirection = object.direction,
+                  let niDistance = object.distance,
+                  let cameraTransform = arView.session.currentFrame?.camera.transform
+            else {
+                return
+            }
+
+            let localPosition = SIMD3<Float>(
+                niDirection.x * niDistance,
+                niDirection.y * niDistance,
+                niDirection.z * niDistance
+            )
             
-            // Create a 4x4 matrix from the NI direction
             var directionTransform = matrix_identity_float4x4
-            directionTransform.columns.3.x = niDirection.x
-            directionTransform.columns.3.y = niDirection.y
-            directionTransform.columns.3.z = niDirection.z
+            directionTransform.columns.3 = SIMD4<Float>(localPosition, 1.0)
             
-            // Combine the camera and direction transforms
             let worldTransform = cameraTransform * directionTransform
             
-            // Make the arrow entity look at the target's position
-            // We position the arrow 1m in front of the camera
-            // and tell it to "look at" the world-space position of the client.
             let targetPosition = SIMD3<Float>(worldTransform.columns.3.x,
                                                worldTransform.columns.3.y,
                                                worldTransform.columns.3.z)
+
+            let localTargetPosition = cameraAnchor.convert(position: targetPosition, from: nil)
             
-            arrowEntity.look(at: targetPosition, from: [0, 0, -1.0], relativeTo: cameraAnchor)
+            arrowEntity.look(at: localTargetPosition,
+                             from: arrowEntity.position,
+                             relativeTo: cameraAnchor)
             
         } else {
-            // No object, hide the arrow
             arrowEntity.isEnabled = false
         }
+    }
+    
+    func dismantleUIView(_ uiView: ARView, context: Context) {
+        uiView.session.pause()
     }
 }
