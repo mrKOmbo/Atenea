@@ -14,9 +14,24 @@ class ARViewModel: NSObject, ObservableObject {
     private var meshAnchors: [ARMeshAnchor] = []
     private var capturedMeshGeometries: [(vertices: [SIMD3<Float>], faces: [UInt32], normals: [SIMD3<Float>])] = []
     
+    // Throttling para captura de frames (1 fps)
+    private var lastFrameTime: TimeInterval = 0
+    private let frameInterval: TimeInterval = 1.0 // 1 segundo entre capturas
+    private var rotationTimer: Timer?
+    private var processedMeshIDs = Set<UUID>()
+    
     override init() {
         super.init()
         isLiDARAvailable = ARWorldTrackingConfiguration.supportsSceneReconstruction(.mesh)
+    }
+    
+    deinit {
+        // Limpiar recursos al destruir
+        rotationTimer?.invalidate()
+        rotationTimer = nil
+        arView?.session.pause()
+        miniARView?.session.pause()
+        miniARView = nil
     }
     
     func startScanning() {
@@ -50,14 +65,32 @@ class ARViewModel: NSObject, ObservableObject {
         scanCompleted = false
         meshAnchors.removeAll()
         capturedMeshGeometries.removeAll()
+        processedMeshIDs.removeAll()
         pointCount = 0
-        arView?.session.pause()
+        lastFrameTime = 0
+        
+        // Limpiar mini vista
+        rotationTimer?.invalidate()
+        rotationTimer = nil
         miniARView?.scene.anchors.removeAll()
+        miniARView = nil
+        
+        // Reiniciar sesión principal
+        guard let arView = arView else { return }
+        let config = ARWorldTrackingConfiguration()
+        config.planeDetection = [.horizontal, .vertical]
+        arView.session.run(config, options: [.resetTracking, .removeExistingAnchors])
     }
     
     private func setupMiniView() {
+        // Limpiar vista anterior si existe
+        miniARView?.scene.anchors.removeAll()
+        miniARView = nil
+        
+        // Crear nueva mini vista optimizada
         miniARView = ARView(frame: .zero)
         miniARView?.environment.background = .color(.black)
+        miniARView?.renderOptions = [.disablePersonOcclusion, .disableDepthOfField, .disableMotionBlur]
     }
     
     private func captureFinalMesh() {
@@ -147,13 +180,19 @@ class ARViewModel: NSObject, ObservableObject {
     }
     
     private func animateMiniView() {
+        // Invalidar timer anterior si existe
+        rotationTimer?.invalidate()
+        
         guard let anchor = miniARView?.scene.anchors.first else { return }
-        var transform = anchor.transform
-        let rotation = simd_quatf(angle: .pi / 180, axis: [0, 1, 0])
-        Timer.scheduledTimer(withTimeInterval: 0.016, repeats: true) { timer in
-            guard self.miniARView != nil else { timer.invalidate(); return }
-            transform.rotation *= rotation
-            anchor.transform = transform
+        
+        // Usar weak self para evitar retain cycle
+        rotationTimer = Timer.scheduledTimer(withTimeInterval: 0.033, repeats: true) { [weak self] timer in
+            guard let self = self, self.miniARView != nil else {
+                timer.invalidate()
+                return
+            }
+            let rotation = simd_quatf(angle: .pi / 90, axis: [0, 1, 0])
+            anchor.transform.rotation *= rotation
         }
     }
     
@@ -165,14 +204,50 @@ class ARViewModel: NSObject, ObservableObject {
 
 extension ARViewModel: ARSessionDelegate {
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
-        if isScanning {
-            var total = 0
-            for anchor in frame.anchors {
-                if let meshAnchor = anchor as? ARMeshAnchor {
-                    total += meshAnchor.geometry.vertices.count
+        guard isScanning else { return }
+        
+        let currentTime = frame.timestamp
+        
+        // THROTTLING: Solo procesar 1 frame por segundo
+        guard currentTime - lastFrameTime >= frameInterval else { return }
+        lastFrameTime = currentTime
+        
+        // Actualizar contador de puntos de forma optimizada
+        var total = 0
+        var newMeshCount = 0
+        
+        for anchor in frame.anchors {
+            if let meshAnchor = anchor as? ARMeshAnchor {
+                total += meshAnchor.geometry.vertices.count
+                
+                // Solo procesar mesh anchors nuevos
+                if !processedMeshIDs.contains(meshAnchor.identifier) {
+                    processedMeshIDs.insert(meshAnchor.identifier)
+                    newMeshCount += 1
                 }
             }
-            DispatchQueue.main.async { self.pointCount = total }
         }
+        
+        // Actualizar UI en main thread
+        DispatchQueue.main.async { [weak self] in
+            self?.pointCount = total
+        }
+        
+        // Log cada 5 segundos
+        if Int(currentTime) % 5 == 0 {
+            print("📊 Meshes únicos: \(processedMeshIDs.count), Puntos totales: \(total)")
+        }
+    }
+    
+    func session(_ session: ARSession, didFailWithError error: Error) {
+        print("❌ ARSession error: \(error.localizedDescription)")
+    }
+    
+    func sessionWasInterrupted(_ session: ARSession) {
+        print("⚠️ ARSession interrumpida")
+    }
+    
+    func sessionInterruptionEnded(_ session: ARSession) {
+        print("✅ ARSession reanudada")
     }
 }
