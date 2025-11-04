@@ -4,8 +4,6 @@
     <dict>
         <key>NSCameraUsageDescription</key>
         <string>Esta app necesita acceso a la cámara para escanear el entorno en 3D usando LiDAR</string>
-        <key>Privacy - Camera Usage Description</key>
-        <string>Necesitamos la cámara para capturar y escanear el entorno</string>
         <key>UIRequiredDeviceCapabilities</key>
         <array>
             <string>arkit</string>

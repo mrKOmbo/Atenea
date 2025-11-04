@@ -35,21 +35,49 @@ class ARViewModel: NSObject, ObservableObject {
     }
     
     func startScanning() {
-        guard isLiDARAvailable, let arView = arView else { return }
+        guard isLiDARAvailable else {
+            print("❌ LiDAR no disponible en este dispositivo")
+            return
+        }
+        
+        guard let arView = arView else {
+            print("❌ ARView no inicializado")
+            return
+        }
+        
+        print("🚀 Iniciando escaneo LiDAR...")
+        
         isScanning = true
         scanCompleted = false
         meshAnchors.removeAll()
         capturedMeshGeometries.removeAll()
+        processedMeshIDs.removeAll()
         pointCount = 0
+        lastFrameTime = 0
         
         let config = ARWorldTrackingConfiguration()
-        config.sceneReconstruction = .mesh
+        
+        // Verificar soporte antes de configurar
+        if ARWorldTrackingConfiguration.supportsSceneReconstruction(.mesh) {
+            config.sceneReconstruction = .mesh
+            print("✅ Scene reconstruction activado")
+        } else {
+            print("⚠️ Scene reconstruction no soportado")
+        }
+        
         config.environmentTexturing = .automatic
         config.planeDetection = [.horizontal, .vertical]
-        config.frameSemantics = .sceneDepth
         
+        // Solo agregar sceneDepth si está disponible
+        if ARWorldTrackingConfiguration.supportsFrameSemantics(.sceneDepth) {
+            config.frameSemantics = .sceneDepth
+            print("✅ Scene depth activado")
+        }
+        
+        // NO reemplazar delegate - ya está asignado en ARViewContainer
         arView.session.run(config, options: [.resetTracking, .removeExistingAnchors])
-        arView.session.delegate = self
+        
+        print("✅ Sesión AR iniciada correctamente")
         setupMiniView()
     }
     
@@ -90,7 +118,6 @@ class ARViewModel: NSObject, ObservableObject {
         // Crear nueva mini vista optimizada
         miniARView = ARView(frame: .zero)
         miniARView?.environment.background = .color(.black)
-        miniARView?.renderOptions = [.disablePersonOcclusion, .disableDepthOfField, .disableMotionBlur]
     }
     
     private func captureFinalMesh() {
