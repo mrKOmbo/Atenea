@@ -64,40 +64,63 @@ class MeshExporter {
     }
     
     private func generateOBJ(geometries: [(vertices: [SIMD3<Float>], faces: [UInt32], normals: [SIMD3<Float>])], mtlFileName: String) -> String {
+        let totalVertices = geometries.reduce(0) { $0 + $1.vertices.count }
+        let totalFaces = geometries.reduce(0) { $0 + $1.faces.count / 3 }
+        
         var obj = "# LiDAR 3D Scanner Export\n"
-        obj += "mtllib \(mtlFileName)\n"
-        obj += "usemtl LiDAR_Material\n\n"
+        obj += "# Captured with iPhone LiDAR\n"
+        obj += "# Vertices: \(totalVertices)\n"
+        obj += "# Faces: \(totalFaces)\n"
+        obj += "# Meshes: \(geometries.count)\n"
+        obj += "# Scale: Meters (Real-world scale)\n\n"
+        obj += "mtllib \(mtlFileName)\n\n"
         
         var vertexOffset: UInt32 = 0
         
         for (index, geometry) in geometries.enumerated() {
+            obj += "# Mesh \(index + 1) of \(geometries.count)\n"
             obj += "o Mesh_\(index)\n"
+            obj += "usemtl LiDAR_Material\n"
             
+            // Vértices
             for vertex in geometry.vertices {
                 obj += "v \(vertex.x) \(vertex.y) \(vertex.z)\n"
             }
+            
+            // Normales
             for normal in geometry.normals {
                 obj += "vn \(normal.x) \(normal.y) \(normal.z)\n"
             }
+            
+            // Caras con normales
+            obj += "s 1\n" // Smooth shading
             for i in stride(from: 0, to: geometry.faces.count, by: 3) {
                 let f1 = geometry.faces[i] + vertexOffset + 1
                 let f2 = geometry.faces[i+1] + vertexOffset + 1
                 let f3 = geometry.faces[i+2] + vertexOffset + 1
                 obj += "f \(f1)//\(f1) \(f2)//\(f2) \(f3)//\(f3)\n"
             }
+            
             vertexOffset += UInt32(geometry.vertices.count)
+            obj += "\n"
         }
         return obj
     }
     
     private func generateMTL() -> String {
         var mtl = "# LiDAR Material\n"
+        mtl += "# Material optimizado para visualización\n\n"
+        
         mtl += "newmtl LiDAR_Material\n"
-        mtl += "Ka 0.2 0.4 0.6\n"
-        mtl += "Kd 0.3 0.6 0.8\n"
-        mtl += "Ks 0.5 0.5 0.5\n"
-        mtl += "Ns 100.0\n"
-        mtl += "d 1.0\n"
+        mtl += "# Colores más brillantes para mejor visualización\n"
+        mtl += "Ka 0.3 0.5 0.8\n"  // Ambient: Azul brillante
+        mtl += "Kd 0.5 0.7 0.9\n"  // Diffuse: Azul claro
+        mtl += "Ks 0.8 0.8 0.8\n"  // Specular: Blanco brillante
+        mtl += "Ns 200.0\n"        // Shininess: Más brillante
+        mtl += "d 1.0\n"           // Opacity: Sólido
+        mtl += "illum 2\n"         // Iluminación completa con highlights
+        mtl += "Ni 1.5\n"          // Índice de refracción
+        
         return mtl
     }
     
