@@ -14,9 +14,9 @@ class ARViewModel: NSObject, ObservableObject {
     private var meshAnchors: [ARMeshAnchor] = []
     private var capturedMeshGeometries: [(vertices: [SIMD3<Float>], faces: [UInt32], normals: [SIMD3<Float>])] = []
     
-    // Throttling para captura de frames (1 fps)
+    // Throttling para captura de frames - REDUCIDO para iPhone 13 Pro
     private var lastFrameTime: TimeInterval = 0
-    private let frameInterval: TimeInterval = 1.0 // 1 segundo entre capturas
+    private let frameInterval: TimeInterval = 7.0 // 3 segundos entre capturas (antes: 1.0)
     private var rotationTimer: Timer?
     private var processedMeshIDs = Set<UUID>()
     
@@ -29,6 +29,8 @@ class ARViewModel: NSObject, ObservableObject {
         // Limpiar recursos al destruir
         rotationTimer?.invalidate()
         rotationTimer = nil
+        miniViewUpdateTimer?.invalidate()
+        miniViewUpdateTimer = nil
         arView?.session.pause()
         miniARView?.session.pause()
         miniARView = nil
@@ -79,11 +81,17 @@ class ARViewModel: NSObject, ObservableObject {
         
         print("✅ Sesión AR iniciada correctamente")
         setupMiniView()
+        startMiniViewUpdates()
     }
     
     func stopScanning() {
         isScanning = false
         scanCompleted = true
+        
+        // Detener actualizaciones automáticas
+        miniViewUpdateTimer?.invalidate()
+        miniViewUpdateTimer = nil
+        
         captureFinalMesh()
         updateMiniViewWithFinalMesh()
     }
@@ -100,6 +108,8 @@ class ARViewModel: NSObject, ObservableObject {
         // Limpiar mini vista
         rotationTimer?.invalidate()
         rotationTimer = nil
+        miniViewUpdateTimer?.invalidate()
+        miniViewUpdateTimer = nil
         miniARView?.scene.anchors.removeAll()
         miniARView = nil
         
@@ -118,6 +128,49 @@ class ARViewModel: NSObject, ObservableObject {
         // Crear nueva mini vista optimizada
         miniARView = ARView(frame: .zero)
         miniARView?.environment.background = .color(.black)
+        
+        // Configurar iluminación para mejor visualización
+        if let miniView = miniARView {
+            let anchor = AnchorEntity(world: .zero)
+            miniView.scene.addAnchor(anchor)
+        }
+    }
+    
+    private func startMiniViewUpdates() {
+        // Actualizar mini-vista cada 2 segundos mientras escanea
+        miniViewUpdateTimer?.invalidate()
+        miniViewUpdateTimer = Timer.scheduledTimer(withTimeInterval: miniViewUpdateInterval, repeats: true) { [weak self] _ in
+            guard let self = self, self.isScanning else { return }
+            self.updateMiniViewInRealTime()
+        }
+    }
+    
+    private func updateMiniViewInRealTime() {
+        guard let arView = arView, let miniView = miniARView else { return }
+        
+        // Limpiar vista anterior
+        miniView.scene.anchors.removeAll()
+        
+        // Crear anchor principal
+        let mainAnchor = AnchorEntity(world: .zero)
+        
+        // Capturar meshes actuales del frame
+        var meshCount = 0
+        for anchor in arView.session.currentFrame?.anchors ?? [] {
+            if let meshAnchor = anchor as? ARMeshAnchor {
+                if let entity = createMeshEntityFromAnchor(meshAnchor, index: meshCount) {
+                    mainAnchor.addChild(entity)
+                    meshCount += 1
+                }
+            }
+        }
+        
+        miniView.scene.addAnchor(mainAnchor)
+        
+        if meshCount > 0 {
+            print("🔄 Mini-vista actualizada: \(meshCount) meshes")
+            animateMiniView()
+        }
     }
     
     private func captureFinalMesh() {
