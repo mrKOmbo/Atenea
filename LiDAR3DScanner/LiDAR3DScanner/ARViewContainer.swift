@@ -30,7 +30,7 @@ struct ARViewContainer: UIViewRepresentable {
     }
     
     
-    static func dismantleUIView(_ uiView: ARView, coordinator: Coordinator) {
+    static func dismantleUIView(_ uiView: ARView, coordinator: ()) {
         // Limpiar recursos al destruir la vista
         uiView.session.pause()
         uiView.scene.anchors.removeAll()

@@ -16,9 +16,14 @@ class ARViewModel: NSObject, ObservableObject {
     
     // Throttling para captura de frames - REDUCIDO para iPhone 13 Pro
     private var lastFrameTime: TimeInterval = 0
-    private let frameInterval: TimeInterval = 7.0 // 3 segundos entre capturas (antes: 1.0)
+    private let frameInterval: TimeInterval = 7.0 // 7 segundos entre capturas (antes: 1.0)
     private var rotationTimer: Timer?
     private var processedMeshIDs = Set<UUID>()
+    
+    // Variables para actualización de mini-vista 3D en tiempo real
+    private var miniViewUpdateTimer: Timer?
+    private var lastMiniViewUpdate: TimeInterval = 0
+    private let miniViewUpdateInterval: TimeInterval = 2.0 // Actualizar mini-vista cada 2 segundos
     
     override init() {
         super.init()
@@ -257,6 +262,61 @@ class ARViewModel: NSObject, ObservableObject {
         var material = SimpleMaterial()
         material.color = .init(tint: .blue.withAlphaComponent(0.8), texture: nil)
         return ModelEntity(mesh: mesh, materials: [material])
+    }
+    
+    private func createMeshEntityFromAnchor(_ meshAnchor: ARMeshAnchor, index: Int) -> ModelEntity? {
+        let geometry = meshAnchor.geometry
+        
+        // Extraer vértices
+        let verticesSource = geometry.vertices
+        let verticesBuffer = verticesSource.buffer.contents()
+        let vertexCount = verticesSource.count
+        let vertexStride = verticesSource.stride
+        
+        guard vertexCount > 0 else { return nil }
+        
+        var vertexArray: [SIMD3<Float>] = []
+        for i in 0..<vertexCount {
+            let vertexPointer = verticesBuffer.advanced(by: i * vertexStride)
+            let vertex = vertexPointer.assumingMemoryBound(to: SIMD3<Float>.self).pointee
+            vertexArray.append(vertex)
+        }
+        
+        // Extraer caras
+        let facesSource = geometry.faces
+        let facesBuffer = facesSource.buffer.contents()
+        let faceCount = facesSource.count
+        let indexCountPerFace = facesSource.indexCountPerPrimitive
+        
+        var faceArray: [UInt32] = []
+        for i in 0..<faceCount {
+            let facePointer = facesBuffer.advanced(by: i * indexCountPerFace * MemoryLayout<UInt32>.stride)
+            for j in 0..<indexCountPerFace {
+                let index = facePointer.advanced(by: j * MemoryLayout<UInt32>.stride)
+                    .assumingMemoryBound(to: UInt32.self).pointee
+                faceArray.append(index)
+            }
+        }
+        
+        guard !faceArray.isEmpty else { return nil }
+        
+        // Crear descriptor
+        var descriptor = MeshDescriptor(name: "realtime_\(index)")
+        descriptor.positions = MeshBuffer(vertexArray)
+        descriptor.primitives = .triangles(faceArray)
+        
+        guard let mesh = try? MeshResource.generate(from: [descriptor]) else { return nil }
+        
+        // Material cyan para visualización en tiempo real
+        var material = SimpleMaterial()
+        material.color = .init(tint: .cyan.withAlphaComponent(0.7), texture: nil)
+        material.roughness = .float(0.3)
+        material.metallic = .float(0.1)
+        
+        let entity = ModelEntity(mesh: mesh, materials: [material])
+        entity.transform.matrix = meshAnchor.transform
+        
+        return entity
     }
     
     private func animateMiniView() {
