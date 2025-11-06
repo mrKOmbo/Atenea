@@ -7,7 +7,7 @@
 
 import RoomPlan
 import SwiftUI
-
+import Foundation // <-- Add this import
 
 class RoomController :  RoomCaptureViewDelegate {
     func encode(with coder: NSCoder) {
@@ -17,16 +17,6 @@ class RoomController :  RoomCaptureViewDelegate {
     required init?(coder: NSCoder) {
         fatalError("Not Needed")
     }
-    
-   
-    
-//    func encode(with coder: NSCoder) {
-//        fatalError("Not Needed")
-//    }
-//    
-//    required dynamic init?(coder: NSCoder) {
-//        fatalError("Not Needed")
-//    }
     
     static var instance = RoomController()
     var captureView  : RoomCaptureView
@@ -48,14 +38,32 @@ class RoomController :  RoomCaptureViewDelegate {
         finalResult = processedResult
     }
     
-//    to start scanning
     func startSession() {
         captureView.captureSession.run(configuration: sessionConfig)
     }
     
-//    to stop session
     func stopSession() {
         captureView.captureSession.stop()
+    }
+    
+    // MARK: - USDZ EXPORT FUNCTION
+    func exportToUSDZ() -> URL? {
+        guard let room = finalResult else {
+            print("Error: No final room result available for export.")
+            return nil
+        }
+        
+        let tempDir = FileManager.default.temporaryDirectory
+        let fileName = "RoomScan_\(Date().timeIntervalSince1970).usdz"
+        let fileURL = tempDir.appendingPathComponent(fileName)
+                
+        do {
+            try room.export(to: fileURL)
+            return fileURL
+        } catch {
+            print("Error exporting CapturedRoom to USDZ: \(error.localizedDescription)")
+            return nil
+        }
     }
 }
 
