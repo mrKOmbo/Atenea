@@ -1,8 +1,8 @@
 //
-//  RoomPlanView.swift
-//  RoomPlanSwiftUI
+//  RoomPlanView.swift
+//  RoomPlanSwiftUI
 //
-//  Created by tiyas aria on 10/12/23.
+//  Created by tiyas aria on 10/12/23.
 //
 
 import SwiftUI
@@ -13,9 +13,11 @@ struct ShareableFile: Identifiable {
 }
 
 struct RoomPlanView: View {
-    var roomController = RoomController.instance
-    @State private var doneScanning: Bool = false
-    @State private var shareableFile: ShareableFile?
+    @ObservedObject var roomController = RoomController.instance
+    
+    // --- FIX #5 (Part 5) ---
+    // We no longer need the @State private var showResultView
+    // ------------------------
     
     var body: some View {
         ZStack {
@@ -26,35 +28,43 @@ struct RoomPlanView: View {
             
             VStack {
                 Spacer()
-                    if !doneScanning {
+                
+                if roomController.isProcessing {
+                    ProgressView("Finishing Scan...")
+                        .padding()
+                        .background(Color.black.opacity(0.5))
+                        .cornerRadius(10)
+                        .foregroundColor(.white)
+                
+                } else {
                     Button(action: {
                         roomController.stopSession()
-                        self.doneScanning = true
                     }, label: {
                         Text("Done Scanning")
                             .padding(10)
                     })
                     .buttonStyle(.borderedProminent)
                     .cornerRadius(30)
-                } else {
-                    Button(action: {
-                        if let url = roomController.exportToUSDZ() {
-                            self.shareableFile = ShareableFile(url: url)
-                        }
-                    }, label: {
-                        Text("Export as .USDZ")
-                            .padding(10)
-                    })
-                    .buttonStyle(.borderedProminent)
-                    .cornerRadius(30)
                 }
             }
-            .padding(.bottom, 10)
+            .padding(.bottom, 30)
         }
-        .sheet(item: $shareableFile) { file in
-            ShareSheet(activityItems: [file.url])
+        
+        // --- FIX #5 (Part 6) ---
+        // Remove the .onChange modifier.
+        // Replace .sheet(isPresented:...) with .sheet(item:...)
+        // This automatically watches our 'roomResult' publisher.
+        .sheet(item: $roomController.roomResult) { result in
+            // 'result' is the non-nil RoomResult
+            // We pass its 'room' property to our ResultView
+            ResultView(room: result.room)
         }
-        // --------------------------
+        // ------------------------
+        
+        .onDisappear {
+            // This is good practice, ensures a fresh scan next time
+            roomController.roomResult = nil
+        }
     }
 }
 
