@@ -14,11 +14,7 @@ struct ShareableFile: Identifiable {
 
 struct RoomPlanView: View {
     @ObservedObject var roomController = RoomController.instance
-    
-    // --- FIX #5 (Part 5) ---
-    // We no longer need the @State private var showResultView
-    // ------------------------
-    
+        
     var body: some View {
         ZStack {
             RoomCaptureViewRepresentable()
@@ -49,20 +45,10 @@ struct RoomPlanView: View {
             }
             .padding(.bottom, 30)
         }
-        
-        // --- FIX #5 (Part 6) ---
-        // Remove the .onChange modifier.
-        // Replace .sheet(isPresented:...) with .sheet(item:...)
-        // This automatically watches our 'roomResult' publisher.
         .sheet(item: $roomController.roomResult) { result in
-            // 'result' is the non-nil RoomResult
-            // We pass its 'room' property to our ResultView
             ResultView(room: result.room)
         }
-        // ------------------------
-        
         .onDisappear {
-            // This is good practice, ensures a fresh scan next time
             roomController.roomResult = nil
         }
     }

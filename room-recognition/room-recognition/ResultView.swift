@@ -59,10 +59,6 @@ struct ResultView: View {
 
     /// Sets up the SCNScene from the CapturedRoom and highlights doors.
     func setupScene() {
-        
-        // --- FIX #1 ---
-        // We can't init an SCNScene directly from CapturedRoom.
-        // We must first export it to a temporary file.
         let tempDir = FileManager.default.temporaryDirectory
         let tempURL = tempDir.appendingPathComponent("tempRoom.usdz")
         
@@ -95,15 +91,10 @@ struct ResultView: View {
             greenMaterial.diffuse.contents = UIColor.green.withAlphaComponent(0.7)
             greenMaterial.specular.contents = UIColor.white
             
-            // --- THIS IS THE FIX ---
-            // You are 100% correct. We can directly access the .doors array.
             let doors = room.doors
-            // ---------------------
             
             print("Found \(doors.count) doors to highlight.")
             
-            // This loop now iterates over [CapturedRoom.Door]
-            // which, as you noted, has .dimensions and .transform
             for door in doors {
                 let dimensions = door.dimensions
                 let box = SCNBox(width: CGFloat(dimensions.x),

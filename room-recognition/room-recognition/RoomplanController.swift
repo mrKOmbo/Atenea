@@ -10,9 +10,6 @@ import SwiftUI
 import Foundation
 import Combine
 
-// --- FIX #5 (Part 1) ---
-// We create this struct to hold our final room.
-// Making it Identifiable lets us use it with .sheet(item:)
 struct RoomResult: Identifiable {
     let id = UUID()
     let room: CapturedRoom
@@ -37,13 +34,8 @@ class RoomController: NSObject, RoomCaptureViewDelegate, ObservableObject {
     // MARK: - Published Properties
     @Published var isProcessing: Bool = false
     
-    // --- FIX #5 (Part 2) ---
-    // We replace finalResult with our new Identifiable struct
     @Published var roomResult: RoomResult?
-    // ------------------------
 
-    // --- FIX #4 ---
-    // Added 'override' because we are subclassing NSObject
     override init() {
     // --------------
         captureView = RoomCaptureView(frame: .zero)
@@ -59,8 +51,6 @@ class RoomController: NSObject, RoomCaptureViewDelegate, ObservableObject {
     func captureView(didPresent processedResult: CapturedRoom, error: (Error)?) {
         // Update on the main thread
         DispatchQueue.main.async {
-            // --- FIX #5 (Part 3) ---
-            // Set our new published property
             self.roomResult = RoomResult(room: processedResult)
             // ------------------------
             self.isProcessing = false
@@ -71,7 +61,6 @@ class RoomController: NSObject, RoomCaptureViewDelegate, ObservableObject {
     func startSession() {
         // Reset properties for a new scan
         DispatchQueue.main.async {
-            // --- FIX #5 (Part 4) ---
             self.roomResult = nil
             // ------------------------
             self.isProcessing = false
