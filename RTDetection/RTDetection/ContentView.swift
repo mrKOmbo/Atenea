@@ -42,18 +42,44 @@ final class RTDetector: NSObject, ObservableObject, AVCaptureVideoDataOutputSamp
     private func getTextVariations(_ keyword: String) -> [String] {
         switch keyword {
         case "SALIDA":
-            return ["SALlDA", "5ALIDA", "SAUDA", "SALlD4", "SALIBA", "SALJDA"]
+            return ["SALlDA", "5ALIDA", "SAUDA", "SALlD4", "SALIBA", "SALJDA", "SAL1DA", "SALIDÁ", "SÁLIDA", "SALIBA", "SALÉDA"]
         case "EXIT":
-            return ["EX1T", "EXlT", "EX17", "EXI7", "EX!T"]
+            return ["EX1T", "EXlT", "EX17", "EXI7", "EX!T", "EXJT", "EXlI", "EXlТ"]
         case "ENTRADA":
-            return ["ENTR4DA", "ENTRADA", "ENTRADd", "ENTR4D4", "ENTPADA"]
+            return ["ENTR4DA", "ENTRADA", "ENTRADd", "ENTR4D4", "ENTPADA", "ENTRABA", "ENTRAD4", "ÉNTRADA", "ENTRÁDA"]
         case "ENTRANCE":
-            return ["ENTR4NCE", "ENTRANC3", "ENTRAHCE", "ENTR4NC3"]
+            return ["ENTR4NCE", "ENTRANC3", "ENTRAHCE", "ENTR4NC3", "ENTPANCE"]
         case "EMERGENCIA":
-            return ["EMERG3NCIA", "EMERGENC1A", "EMERGENC!A"]
+            return ["EMERG3NCIA", "EMERGENC1A", "EMERGENC!A", "EMERGENCJA"]
+        case "DOOR":
+            return ["D00R", "DOQR", "DO0R", "BOOR"]
+        case "PUERTA":
+            return ["PU3RTA", "PUERT4", "PUÉRTA", "PUER7A"]
         default:
             return []
         }
+    }
+    
+    // Fuzzy matching para similitud de caracteres (textos pequeños/borrosos)
+    private func fuzzyMatch(_ text: String, keyword: String, threshold: Double) -> Bool {
+        guard !text.isEmpty && !keyword.isEmpty else { return false }
+        guard text.count >= keyword.count - 2 else { return false } // Longitud similar
+        
+        let textChars = Array(text)
+        let keywordChars = Array(keyword)
+        
+        var matches = 0
+        let maxLen = max(textChars.count, keywordChars.count)
+        
+        // Comparar posiciones
+        for i in 0..<min(textChars.count, keywordChars.count) {
+            if textChars[i] == keywordChars[i] {
+                matches += 1
+            }
+        }
+        
+        let similarity = Double(matches) / Double(keyword.count)
+        return similarity >= threshold
     }
     
     // Public
@@ -124,12 +150,12 @@ final class RTDetector: NSObject, ObservableObject, AVCaptureVideoDataOutputSamp
             var best: (CGRect, String, Float)? = nil
             
             for o in obs {
-                // Procesar los top 3 candidatos para mejor precisión
-                let candidates = o.topCandidates(3)
+                // Procesar los top 5 candidatos para mejor precisión con texto pequeño
+                let candidates = o.topCandidates(5)
                 for candidate in candidates {
                     let s = candidate.string.uppercased()
-                    // Guardar primeros textos para debug
-                    if detectedTexts.count < 5 && candidate.confidence > 0.3 {
+                    // Guardar textos para debug (umbral más bajo para ver todo)
+                    if detectedTexts.count < 8 && candidate.confidence > 0.2 {
                         detectedTexts.append(s)
                     }
                     
@@ -148,9 +174,17 @@ final class RTDetector: NSObject, ObservableObject, AVCaptureVideoDataOutputSamp
                         return variations.contains { s.contains($0) }
                     }
                     
-                    if isExit || isEntrance {
-                        let k = isExit ? "SALIDA" : "ENTRADA"
-                        let conf = candidate.confidence * 0.9 // Penalizar ligeramente candidatos secundarios
+                    // Búsqueda aún más flexible: fuzzy matching (70% similitud)
+                    let isExitFuzzy = self.keywordsExit.contains { keyword in
+                        self.fuzzyMatch(s, keyword: keyword, threshold: 0.7)
+                    }
+                    let isEntranceFuzzy = self.keywordsEntrance.contains { keyword in
+                        self.fuzzyMatch(s, keyword: keyword, threshold: 0.7)
+                    }
+                    
+                    if isExit || isEntrance || isExitFuzzy || isEntranceFuzzy {
+                        let k = (isExit || isExitFuzzy) ? "SALIDA" : "ENTRADA"
+                        let conf = candidate.confidence * 0.85 // Penalizar ligeramente candidatos secundarios
                         if let b = best {
                             if conf > b.2 { best = (o.boundingBox, k, conf) }
                         } else {
@@ -161,10 +195,10 @@ final class RTDetector: NSObject, ObservableObject, AVCaptureVideoDataOutputSamp
             }
             if let b = best { foundSign = b }
         }
-        ocr.recognitionLevel = .accurate // Cambiar a accurate para mejor calidad
-        ocr.usesLanguageCorrection = true
-        ocr.recognitionLanguages = ["es-MX","es","en","zh-Hans","zh-Hant"] // Agregar chino
-        ocr.minimumTextHeight = 0.005 // Reducir para texto muy pequeño
+        ocr.recognitionLevel = .accurate // Accurate es mejor para texto pequeño
+        ocr.usesLanguageCorrection = false // Desactivar para no alterar SALIDA/ENTRADA
+        ocr.recognitionLanguages = ["es","en"] // Solo español e inglés para mejor rendimiento
+        ocr.minimumTextHeight = 0.0 // Sin límite - detectar TODO el texto posible
 
         // Core ML Model - Detección de puertas personalizada
         var doorRects: [CGRect] = []
