@@ -1,8 +1,8 @@
 //
-//  RoomPlanView.swift
-//  RoomPlanSwiftUI
+//  RoomPlanView.swift
+//  RoomPlanSwiftUI
 //
-//  Created by tiyas aria on 10/12/23.
+//  Created by tiyas aria on 10/12/23.
 //
 
 import SwiftUI
@@ -26,7 +26,7 @@ struct RoomPlanView: View {
                 Spacer()
                 
                 if roomController.isProcessing {
-                    ProgressView("Finishing Scan...")
+                    ProgressView("Finishing Scan & Saving Map...")
                         .padding()
                         .background(Color.black.opacity(0.5))
                         .cornerRadius(10)
@@ -46,14 +46,10 @@ struct RoomPlanView: View {
             .padding(.bottom, 30)
         }
         .sheet(item: $roomController.roomResult) { result in
-            ResultView(room: result.room)
+            ResultView(roomResult: result)
         }
         .onDisappear {
             roomController.roomResult = nil
         }
     }
-}
-
-#Preview {
-    RoomPlanView()
 }

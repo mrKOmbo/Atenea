@@ -11,10 +11,15 @@ import RoomPlan
 import UIKit
 
 struct ResultView: View {
-    let room: CapturedRoom
+    let roomResult: RoomResult
     @State private var scene: SCNScene?
     @State private var shareableFile: ShareableFile?
+    @State private var showARView = false
     @Environment(\.dismiss) var dismiss
+
+    var room: CapturedRoom {
+        roomResult.room
+    }
 
     var body: some View {
         NavigationView {
@@ -29,18 +34,43 @@ struct ResultView: View {
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
                 
-                Button(action: {
-                    if let url = exportToUSDZ() {
-                        self.shareableFile = ShareableFile(url: url)
+                VStack {
+                    HStack(spacing: 10) {
+                        Button(action: {
+                            self.showARView = true
+                        }, label: {
+                            Label("View in AR", systemImage: "arkit")
+                                .font(.headline)
+                                .padding(12)
+                                .frame(maxWidth: .infinity)
+                        })
+                        .buttonStyle(.borderedProminent)
+                        .tint(.blue)
+                        .cornerRadius(30)
+                        .disabled(roomResult.worldMap == nil)
+                        
+                        Button(action: {
+                            if let url = exportToUSDZ() {
+                                self.shareableFile = ShareableFile(url: url)
+                            }
+                        }, label: {
+                            Label("Export", systemImage: "square.and.arrow.up")
+                                .font(.headline)
+                                .padding(12)
+                                .frame(maxWidth: .infinity)
+                        })
+                        .buttonStyle(.borderedProminent)
+                        .tint(.green)
+                        .cornerRadius(30)
                     }
-                }, label: {
-                    Text("Export as .USDZ")
-                        .font(.headline)
-                        .padding(12)
-                        .frame(maxWidth: .infinity)
-                })
-                .buttonStyle(.borderedProminent)
-                .cornerRadius(30)
+                    
+                    if roomResult.worldMap == nil {
+                        Text("Automatic AR alignment is unavailable for this scan.")
+                            .font(.caption)
+                            .foregroundColor(.red)
+                            .padding(.top, 5)
+                    }
+                }
                 .padding()
             }
             .onAppear(perform: setupScene)
@@ -54,6 +84,13 @@ struct ResultView: View {
             .sheet(item: $shareableFile) { file in
                 ShareSheet(activityItems: [file.url])
             }
+            .fullScreenCover(isPresented: $showARView) {
+                if let worldMap = roomResult.worldMap {
+                    ARModelView(room: roomResult.room, worldMap: worldMap)
+                } else {
+                    Text("Error: World Map not found.")
+                }
+            }
         }
     }
 
@@ -66,23 +103,15 @@ struct ResultView: View {
         try? FileManager.default.removeItem(at: tempURL)
 
         do {
-            // 1. Export the room to the temp file URL
             try room.export(to: tempURL)
-            
-            // 2. Load the SCNScene from that file URL
             let newScene = try SCNScene(url: tempURL, options: nil)
-            
-            // 3. Call our function to highlight doors
             highlightDoors(in: newScene, from: room)
-            
-            // 4. Set the scene
             self.scene = newScene
             
         } catch {
             print("Error setting up scene: \(error.localizedDescription)")
-            self.scene = SCNScene() // Set an empty scene on error
+            self.scene = SCNScene()
         }
-        // --------------
     }
     
     /// Finds all doors in the room and adds a green box to them.

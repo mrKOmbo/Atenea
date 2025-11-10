@@ -1,20 +1,21 @@
 //
-//  RoomplanController .swift
-//  RoomPlanSwiftUI
+//  RoomplanController .swift
+//  RoomPlanSwiftUI
 //
-//  Created by tiyas aria on 10/12/23.
+//  Created by tiyas aria on 10/12/23.
 //
 
 import RoomPlan
 import SwiftUI
 import Foundation
 import Combine
+import ARKit
 
 struct RoomResult: Identifiable {
     let id = UUID()
     let room: CapturedRoom
+    var worldMap: ARWorldMap? = nil
 }
-// ------------------------
 
 
 // Add NSObject and ObservableObject
@@ -49,12 +50,22 @@ class RoomController: NSObject, RoomCaptureViewDelegate, ObservableObject {
     
     
     func captureView(didPresent processedResult: CapturedRoom, error: (Error)?) {
-        // Update on the main thread
-        DispatchQueue.main.async {
-            self.roomResult = RoomResult(room: processedResult)
-            // ------------------------
-            self.isProcessing = false
-            print("Room processing complete. Final result is set.")
+        captureView.captureSession.arSession.getCurrentWorldMap { worldMap, error in
+            if let error = error {
+                print("Error getting ARWorldMap: \(error.localizedDescription)")
+                DispatchQueue.main.async {
+                    self.roomResult = RoomResult(room: processedResult, worldMap: nil)
+                    self.isProcessing = false
+                }
+                return
+            }
+            
+            // 2. Update on the main thread with both pieces of data
+            DispatchQueue.main.async {
+                self.roomResult = RoomResult(room: processedResult, worldMap: worldMap)
+                self.isProcessing = false
+                print("Room processing complete. Final result and world map are set.")
+            }
         }
     }
     
@@ -62,7 +73,6 @@ class RoomController: NSObject, RoomCaptureViewDelegate, ObservableObject {
         // Reset properties for a new scan
         DispatchQueue.main.async {
             self.roomResult = nil
-            // ------------------------
             self.isProcessing = false
         }
         captureView.captureSession.run(configuration: sessionConfig)
